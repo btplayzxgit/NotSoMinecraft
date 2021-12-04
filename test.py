@@ -1,0 +1,4 @@
+import NotSoMinecraft
+
+
+NotSoMinecraft.start()
