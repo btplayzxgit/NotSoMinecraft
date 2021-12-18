@@ -20,7 +20,7 @@ global WORDS_IN_CHAT
 WORDS_IN_CHAT = ''
 username = 'Player'
 keyword = None
-FPS = 80
+FPS = 120
 SECTOR_SIZE = 16
 WALKING_SPEED = 3
 FLYING_SPEED = 15
@@ -30,7 +30,7 @@ SPRINT_FOV = SPRINT_SPEED / 2
 GRAVITY = 20.0
 MAX_JUMP_HEIGHT = 1.0
 
-VERSION = '1.0.3'
+VERSION = '1.0.4'
 
 print(f'NotSoMinecraft Engine\nVersion: {VERSION}')
 
