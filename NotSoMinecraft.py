@@ -29,6 +29,10 @@ SPRINT_SPEED = 13
 SPRINT_FOV = SPRINT_SPEED / 2
 GRAVITY = 20.0
 MAX_JUMP_HEIGHT = 1.0
+JUMP_SPEED = math.sqrt(2 * GRAVITY * MAX_JUMP_HEIGHT)
+TERMINAL_VELOCITY = 50
+PLAYER_HEIGHT = 2
+PLAYER_FOV = 80.0
 
 VERSION = '1.0.5'
 
@@ -52,12 +56,7 @@ def start():
     #    t = - v_0 / a
     # Use t and the desired MAX_JUMP_HEIGHT to solve for v_0 (jump speed) in
     #    s = s_0 + v_0 * t + (a * t^2) / 2
-    JUMP_SPEED = math.sqrt(2 * GRAVITY * MAX_JUMP_HEIGHT)
-    TERMINAL_VELOCITY = 50
-
-    # Player variables
-    PLAYER_HEIGHT = 2
-    PLAYER_FOV = 80.0
+    
 
     if sys.version_info[0] >= 3:
         xrange = range
