@@ -30,7 +30,9 @@ SPRINT_FOV = SPRINT_SPEED / 2
 GRAVITY = 20.0
 MAX_JUMP_HEIGHT = 1.0
 
-print('NotSoMinecraft Engine\nVersion: 1.0.0')
+VERSION = '1.0.3'
+
+print(f'NotSoMinecraft Engine\nVersion: {VERSION}')
 
 
 def start():
@@ -1006,7 +1008,7 @@ def start():
 
 
     def main():
-        window = Window(width=1480, height=740, caption='Minecraft', resizable=True)
+        window = Window(width=1480, height=740, caption=f'Minecraft {VERSION}', resizable=True)
         # Hide the mouse cursor and prevent the mouse from leaving the window.
         window.set_exclusive_mouse(True)
         setup()
