@@ -16,9 +16,19 @@ import pyautogui
 import turtle
 
 
+global WORDS_IN_CHAT
 WORDS_IN_CHAT = ''
 username = 'Player'
 keyword = None
+FPS = 80
+SECTOR_SIZE = 16
+WALKING_SPEED = 3
+FLYING_SPEED = 15
+CROUCH_SPEED = 2
+SPRINT_SPEED = 13
+SPRINT_FOV = SPRINT_SPEED / 2
+GRAVITY = 20.0
+MAX_JUMP_HEIGHT = 1.0
 
 print('NotSoMinecraft Engine\nVersion: 1.0.0')
 
@@ -29,25 +39,7 @@ def start():
     turtle.bgpic('source\\startup.gif')
     turtle.exitonclick()
     pyautogui.alert(title='Minecraft', text='CONTROLS\n\nW - FORWARD\nS - BACKWARDS\nA - LEFT\nD - RIGHT\nC - CROUCH\nSPACE - JUMP\nESC - PAUSE THE GAME\nTAB - FLY\n/ - CHAT\nR - SPRINT', button='PLAY')
-    TICKS_INPUT = pyautogui.confirm(title='Minecraft', text='Select the ticks per second', buttons=['5', '10', '30', '60', '80', '100', '150', '200', '250', '300', '350', '400', '450', '500', '550', '600', '650', '700', '750', '800'])
-    if TICKS_INPUT == None:
-        quit()
-    TICKS_INPUT = int(TICKS_INPUT)
-    TICKS_PER_SEC = TICKS_INPUT
-
-    # Size of sectors used to ease block loading.
-    SECTOR_SIZE = 16
-
-    # Movement variables
-    WALKING_SPEED = 2
-    FLYING_SPEED = 15
-    CROUCH_SPEED = 2
-    SPRINT_SPEED = 7
-    SPRINT_FOV = SPRINT_SPEED / 2
-    global WORDS_IN_CHAT
-
-    GRAVITY = 20.0
-    MAX_JUMP_HEIGHT = 1.0 # About the height of a block.
+     # About the height of a block.
     # To derive the formula for calculating jump speed, first solve
     #    v_t = v_0 + a * t
     # for the time at which you achieve maximum height, where a is the acceleration
@@ -102,14 +94,8 @@ def start():
         result.extend(side * 4)
         return result
 
-    
-    TEXTURE_REQUEST = pyautogui.confirm(title='Minecraft', text='Select the texture pack you want', buttons=['Normal Pack', 'Fill Pack', 'Real Pack', 'Dirty Pack'])
 
-
-    if TEXTURE_REQUEST == 'Normal Pack': TEXTURE_PATH = 'source\\normal_texture_pack.png'
-    if TEXTURE_REQUEST == 'Fill Pack': TEXTURE_PATH = 'source\\fill_texture_pack.png'
-    if TEXTURE_REQUEST == 'Real Pack': TEXTURE_PATH = 'source\\real_texture_pack.png'
-    if TEXTURE_REQUEST == 'Dirty Pack': TEXTURE_PATH = 'source\\dirty_texture_pack.png'
+    TEXTURE_PATH = 'source\\normal_texture_pack.png'
 
     GRASS = tex_coords((1, 0), (0, 1), (0, 0))
     SAND = tex_coords((1, 1), (1, 1), (1, 1))
@@ -468,7 +454,7 @@ def start():
 
             """
             start = time.process_time()
-            while self.queue and time.process_time() - start < 1.0 / TICKS_PER_SEC:
+            while self.queue and time.process_time() - start < 1.0 / FPS:
                 self._dequeue()
 
         def process_entire_queue(self):
@@ -558,7 +544,7 @@ def start():
 
             # This call schedules the `update()` method to be called
             # TICKS_PER_SEC. This is the main game event loop.
-            pyglet.clock.schedule_interval(self.update, 1.0 / TICKS_PER_SEC)
+            pyglet.clock.schedule_interval(self.update, 1.0 / FPS)
 
         def set_exclusive_mouse(self, exclusive):
             """ If `exclusive` is True, the game will capture the mouse, if False
@@ -782,7 +768,7 @@ def start():
                         self.model.add_block(previous, self.block)
                 elif button == pyglet.window.mouse.RIGHT and block:
                     texture = self.model.world[block]
-                    if texture != STONE:
+                    if texture != WATER:
                         self.model.remove_block(block)
             else:
                 self.set_exclusive_mouse(True)
@@ -1005,7 +991,7 @@ def start():
 
         """
         # Set the color of "clear", i.e. the sky, in rgba.
-        glClearColor(0.5, 0.69, 1.0, 1)
+        glClearColor(0.5, 0.69, 132, 0)
         # Enable culling (not rendering) of back-facing facets -- facets that aren't
         # visible to you.
         glEnable(GL_CULL_FACE)
@@ -1020,7 +1006,7 @@ def start():
 
 
     def main():
-        window = Window(width=1280, height=720, caption='Minecraft', resizable=True)
+        window = Window(width=1480, height=740, caption='Minecraft', resizable=True)
         # Hide the mouse cursor and prevent the mouse from leaving the window.
         window.set_exclusive_mouse(True)
         setup()
