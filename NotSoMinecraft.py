@@ -33,7 +33,7 @@ TERMINAL_VELOCITY = 50
 PLAYER_HEIGHT = 2
 PLAYER_FOV = 80.0
 
-VERSION = '1.0.7'
+VERSION = '1.0.8'
 
 print(f'NotSoMinecraft Engine\nVersion: {VERSION}')
 
