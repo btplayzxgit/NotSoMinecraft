@@ -15,18 +15,17 @@ from source.noise_gen import NoiseGen
 import pyautogui
 import turtle
 
-
 global WORDS_IN_CHAT
 WORDS_IN_CHAT = ''
 username = 'Player'
 keyword = None
 FPS = 120
-SECTOR_SIZE = 20
+SECTOR_SIZE = 16
 WALKING_SPEED = 3
 FLYING_SPEED = 15
 CROUCH_SPEED = 2
 SPRINT_SPEED = 13
-SPRINT_FOV = SPRINT_SPEED / 2
+SPRINT_FOV = SPRINT_SPEED / 8
 GRAVITY = 20.0
 MAX_JUMP_HEIGHT = 1.0
 JUMP_SPEED = math.sqrt(2 * GRAVITY * MAX_JUMP_HEIGHT)
@@ -34,7 +33,7 @@ TERMINAL_VELOCITY = 50
 PLAYER_HEIGHT = 2
 PLAYER_FOV = 80.0
 
-VERSION = '1.0.5'
+VERSION = '1.0.6'
 
 print(f'NotSoMinecraft Engine\nVersion: {VERSION}')
 
@@ -56,7 +55,7 @@ def start():
     #    t = - v_0 / a
     # Use t and the desired MAX_JUMP_HEIGHT to solve for v_0 (jump speed) in
     #    s = s_0 + v_0 * t + (a * t^2) / 2
-    
+
 
     if sys.version_info[0] >= 3:
         xrange = range
@@ -106,6 +105,7 @@ def start():
     BRICK = tex_coords((2, 0), (2, 0), (2, 0))
     STONE = tex_coords((2, 1), (2, 1), (2, 1))
     WOOD = tex_coords((3, 1), (3, 1), (3, 1))
+    WOOD2 = tex_coords((1, 2), (1, 2), (1, 2))
     LEAF = tex_coords((3, 0), (3, 0), (3, 0))
     WATER = tex_coords((0, 2), (0, 2), (0, 2))
 
@@ -135,6 +135,7 @@ def start():
         x, y, z = position
         x, y, z = (int(round(x)), int(round(y)), int(round(z)))
         return (x, y, z)
+        
 
 
     def sectorize(position):
@@ -221,8 +222,9 @@ def start():
                         if random.randrange(0, 1000) > 990:
                             treeHeight = random.randrange(5, 7)
                             #Tree trunk
+                            wood_type = random.choice([WOOD, WOOD2])
                             for y in xrange(h + 1, h + treeHeight):
-                                self.add_block((x, y, z), WOOD, immediate=False)
+                                self.add_block((x, y, z), wood_type, immediate=False)
                             #Tree leaves
                             leafh = h + treeHeight
                             for lz in xrange(z + -2, z + 3):
@@ -528,7 +530,7 @@ def start():
             self.dy = 0
 
             # A list of blocks the player can place. Hit num keys to cycle.
-            self.inventory = [BRICK, GRASS, SAND, WOOD, LEAF]
+            self.inventory = [BRICK, GRASS, SAND, WOOD, WOOD2, LEAF]
 
             # The current block the user can place. Hit num keys to cycle.
             self.block = self.inventory[0]
@@ -774,6 +776,8 @@ def start():
                     texture = self.model.world[block]
                     if texture != WATER:
                         self.model.remove_block(block)
+                    if texture != STONE or GRASS or SAND or BRICK or WOOD or LEAF:
+                        pass
             else:
                 self.set_exclusive_mouse(True)
 
@@ -822,9 +826,10 @@ def start():
                 global keyword
                 global WORDS_IN_CHAT
                 keyword = pyautogui.prompt(title=f'Minecraft {VERSION}', text=f'CHAT\n\nType something in the chat\n{WORDS_IN_CHAT}')
-                WORDS_IN_CHAT = WORDS_IN_CHAT + f'\n{username}: {keyword}'
                 if keyword == None:
                     pass
+                else:
+                    WORDS_IN_CHAT = WORDS_IN_CHAT + f'\n{username}: {keyword}'
                 
                 
             elif symbol == key.SPACE:
