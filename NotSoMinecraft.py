@@ -33,7 +33,7 @@ TERMINAL_VELOCITY = 50
 PLAYER_HEIGHT = 2
 PLAYER_FOV = 80.0
 
-VERSION = '1.0.8'
+VERSION = '1.0.9'
 
 print(f'NotSoMinecraft Engine\nVersion: {VERSION}')
 
@@ -46,7 +46,7 @@ def start():
     turtle.bgcolor('#654321')
     turtle.bgpic('source\\startup.gif')
     turtle.exitonclick()
-    pyautogui.alert(title=f'Minecraft {VERSION}', text='CONTROLS\n\nW - FORWARD\nS - BACKWARDS\nA - LEFT\nD - RIGHT\nC - CROUCH\nSPACE - JUMP\nESC - PAUSE THE GAME\nTAB - FLY\n/ - CHAT\nR - SPRINT', button='PLAY')
+    pyautogui.alert(title=f'Minecraft {VERSION}', text='CONTROLS\n\nW - FORWARD\nS - BACKWARDS\nA - LEFT\nD - RIGHT\nC - CROUCH\nSPACE - JUMP\nESC - PAUSE THE GAME\nTAB - FLY\n/ - CHAT\nR - SPRINT\nNUMBER KEYS - ITEM IN INVENTORY', button='PLAY')
      # About the height of a block.
     # To derive the formula for calculating jump speed, first solve
     #    v_t = v_0 + a * t
@@ -188,7 +188,7 @@ def start():
             """ Initialize the world by placing all the blocks.
 
             """
-            gen = NoiseGen(452692)
+            gen = NoiseGen(452692 + random.randint(0, 1))
 
             n = 128 #size of the world
             s = 1  # step size
@@ -775,9 +775,7 @@ def start():
                 elif button == pyglet.window.mouse.RIGHT and block:
                     texture = self.model.world[block]
                     if texture != WATER:
-                        self.model.remove_block(block)
-                    if texture != STONE or GRASS or SAND or BRICK or WOOD or LEAF:
-                        pass
+                        self.model.remove_block(block)             
             else:
                 self.set_exclusive_mouse(True)
 

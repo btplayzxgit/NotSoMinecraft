@@ -1,4 +1,5 @@
 import math
+import random
 
 class NoiseParameters:
     def __init__(self, octaves, amplitude, smoothness, roughness, heightOffset):
@@ -51,7 +52,7 @@ class NoiseGen:
         totalValue = 0.0
 
         for a in range(self.noiseParams.octaves - 1):
-            freq = math.pow(2.1, a)
+            freq = math.pow(random.randint(int(2.0), int(2.2)), a)
             totalValue += self._noise(
                 (float(x)) * freq / self.noiseParams.smoothness,
                 (float(z)) * freq / self.noiseParams.smoothness
