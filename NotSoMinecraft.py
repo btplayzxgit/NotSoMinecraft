@@ -19,7 +19,7 @@ global WORDS_IN_CHAT
 WORDS_IN_CHAT = ''
 username = 'Player'
 keyword = None
-FPS = 120
+UPDATE_TIME = 120
 SECTOR_SIZE = 18
 WALKING_SPEED = 3
 FLYING_SPEED = 15
@@ -33,7 +33,7 @@ TERMINAL_VELOCITY = 50
 PLAYER_HEIGHT = 2
 PLAYER_FOV = 80.0
 
-VERSION = '1.0.9'
+VERSION = '1.1.0'
 
 print(f'NotSoMinecraft Engine\nVersion: {VERSION}')
 
@@ -107,6 +107,7 @@ def start():
     WOOD = tex_coords((3, 1), (3, 1), (3, 1))
     WOOD2 = tex_coords((1, 2), (1, 2), (1, 2))
     LEAF = tex_coords((3, 0), (3, 0), (3, 0))
+    LEAF2 = tex_coords((2, 2), (2, 2), (2, 2))
     WATER = tex_coords((0, 2), (0, 2), (0, 2))
 
     FACES = [
@@ -220,17 +221,21 @@ def start():
                     #Maybe add tree at this (x, z)
                     if (h > 20):
                         if random.randrange(0, 1000) > 990:
-                            treeHeight = random.randrange(5, 7)
+                            treeHeight = random.randint(5, 7)
                             #Tree trunk
                             wood_type = random.choice([WOOD, WOOD2])
                             for y in xrange(h + 1, h + treeHeight):
                                 self.add_block((x, y, z), wood_type, immediate=False)
                             #Tree leaves
                             leafh = h + treeHeight
+                            if wood_type == WOOD:
+                                leaf_type = LEAF
+                            elif wood_type == WOOD2:
+                                leaf_type = random.choice([LEAF, LEAF2])
                             for lz in xrange(z + -2, z + 3):
                                 for lx in xrange(x + -2, x + 3): 
                                     for ly in xrange(3):
-                                        self.add_block((lx, leafh + ly, lz), LEAF, immediate=False)
+                                        self.add_block((lx, leafh + ly, lz), leaf_type, immediate=False)
 
         def hit_test(self, position, vector, max_distance=8):
             """ Line of sight search from current position. If a block is
@@ -460,7 +465,7 @@ def start():
 
             """
             start = time.process_time()
-            while self.queue and time.process_time() - start < 1.0 / FPS:
+            while self.queue and time.process_time() - start < 1.0 / UPDATE_TIME:
                 self._dequeue()
 
         def process_entire_queue(self):
@@ -530,7 +535,7 @@ def start():
             self.dy = 0
 
             # A list of blocks the player can place. Hit num keys to cycle.
-            self.inventory = [BRICK, GRASS, SAND, WOOD, WOOD2, LEAF]
+            self.inventory = [BRICK, GRASS, SAND, WOOD, WOOD2, LEAF, LEAF2, STONE]
 
             # The current block the user can place. Hit num keys to cycle.
             self.block = self.inventory[0]
@@ -550,7 +555,7 @@ def start():
 
             # This call schedules the `update()` method to be called
             # TICKS_PER_SEC. This is the main game event loop.
-            pyglet.clock.schedule_interval(self.update, 1.0 / FPS)
+            pyglet.clock.schedule_interval(self.update, 1.0 / UPDATE_TIME)
 
         def set_exclusive_mouse(self, exclusive):
             """ If `exclusive` is True, the game will capture the mouse, if False
@@ -961,9 +966,7 @@ def start():
 
             """
             x, y, z = self.position
-            self.label.text = '%02d (%.2f, %.2f, %.2f) %d / %d' % (
-                pyglet.clock.get_fps(), x, y, z,
-                len(self.model._shown), len(self.model.world))
+            self.label.text = f'FPS: {pyglet.clock.get_fps()} Position: x={x} y={y} z={z}'
             self.label.draw()
 
         def draw_reticle(self):
