@@ -33,7 +33,7 @@ TERMINAL_VELOCITY = 50
 PLAYER_HEIGHT = 2
 PLAYER_FOV = 80.0
 
-VERSION = '1.1.0'
+VERSION = '1.1.1'
 
 print(f'NotSoMinecraft Engine\nVersion: {VERSION}')
 
@@ -966,7 +966,7 @@ def start():
 
             """
             x, y, z = self.position
-            self.label.text = f'FPS: {pyglet.clock.get_fps()} Position: x={x} y={y} z={z}'
+            self.label.text = f'FPS: {int(pyglet.clock.get_fps())} Position: x={int(x)} y={int(y)} z={int(z)}'
             self.label.draw()
 
         def draw_reticle(self):
