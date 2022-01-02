@@ -33,7 +33,7 @@ TERMINAL_VELOCITY = 50
 PLAYER_HEIGHT = 2
 PLAYER_FOV = 80.0
 
-VERSION = '1.1.7'
+VERSION = '1.1.8'
 
 print(f'NotSoMinecraft Engine\nVersion: {VERSION}')
 
@@ -62,12 +62,10 @@ def start():
     creative = False
     survival = False
 
-    gamemode = pyautogui.confirm(title=f'NotSoMinecraft {VERSION}', text='Select gamemode', buttons=['Creative', 'Survival'])
+    gamemode = pyautogui.confirm(title=f'Minecraft {VERSION}', text='Select gamemode', buttons=['Creative', 'Survival'])
     if gamemode == None: quit()
     if gamemode == 'Creative': creative, survival = True, False
     if gamemode == 'Survival': creative, survival = False, True
-
-
 
     if sys.version_info[0] >= 3:
         xrange = range
@@ -793,7 +791,10 @@ def start():
                     # ON OSX, control + left click = right click.
 
                     if previous:
-                        self.model.add_block(previous, self.block)
+                        try:
+                            self.model.add_block(previous, self.block)
+                        except:
+                            pyautogui.alert(title=f'Minecraft {VERSION}', text='There is no block to place..\nStart mining to get blocks!', button='Alright')
                 elif button == pyglet.window.mouse.RIGHT and block:
                     texture = self.model.world[block]
                     if texture != WATER:
@@ -874,9 +875,10 @@ def start():
             if creative:
                 if symbol == key.TAB:
                     self.flying = not self.flying
-            elif symbol in self.num_keys:
-                index = (symbol - self.num_keys[0]) % len(self.inventory)
-                self.block = self.inventory[index]
+            if creative:
+                if symbol in self.num_keys:
+                    index = (symbol - self.num_keys[0]) % len(self.inventory)
+                    self.block = self.inventory[index]
 
         def on_key_release(self, symbol, modifiers):
             """ Called when the player releases a key. See pyglet docs for key
