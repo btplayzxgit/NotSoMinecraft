@@ -33,7 +33,7 @@ TERMINAL_VELOCITY = 50
 PLAYER_HEIGHT = 2
 PLAYER_FOV = 80.0
 
-VERSION = '1.1.1'
+VERSION = '1.1.2'
 
 print(f'NotSoMinecraft Engine\nVersion: {VERSION}')
 
@@ -109,6 +109,7 @@ def start():
     LEAF = tex_coords((3, 0), (3, 0), (3, 0))
     LEAF2 = tex_coords((2, 2), (2, 2), (2, 2))
     WATER = tex_coords((0, 2), (0, 2), (0, 2))
+    DIRT = tex_coords((0, 1), (0, 1), (0, 1))
 
     FACES = [
         ( 0, 1, 0),
@@ -535,7 +536,7 @@ def start():
             self.dy = 0
 
             # A list of blocks the player can place. Hit num keys to cycle.
-            self.inventory = [BRICK, GRASS, SAND, WOOD, WOOD2, LEAF, LEAF2, STONE]
+            self.inventory = [BRICK, GRASS, SAND, WOOD, WOOD2, LEAF, LEAF2, STONE, DIRT]
 
             # The current block the user can place. Hit num keys to cycle.
             self.block = self.inventory[0]
