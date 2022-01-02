@@ -33,7 +33,7 @@ TERMINAL_VELOCITY = 50
 PLAYER_HEIGHT = 2
 PLAYER_FOV = 80.0
 
-VERSION = '1.1.6'
+VERSION = '1.1.7'
 
 print(f'NotSoMinecraft Engine\nVersion: {VERSION}')
 
@@ -55,6 +55,18 @@ def start():
     #    t = - v_0 / a
     # Use t and the desired MAX_JUMP_HEIGHT to solve for v_0 (jump speed) in
     #    s = s_0 + v_0 * t + (a * t^2) / 2
+
+    global creative
+    global survival
+
+    creative = False
+    survival = False
+
+    gamemode = pyautogui.confirm(title=f'NotSoMinecraft {VERSION}', text='Select gamemode', buttons=['Creative', 'Survival'])
+    if gamemode == None: quit()
+    if gamemode == 'Creative': creative, survival = True, False
+    if gamemode == 'Survival': creative, survival = False, True
+
 
 
     if sys.version_info[0] >= 3:
@@ -536,15 +548,18 @@ def start():
             self.dy = 0
 
             # A list of blocks the player can place. Hit num keys to cycle.
-            self.inventory = [BRICK, GRASS, SAND, WOOD, WOOD2, LEAF, LEAF2, STONE, DIRT, WATER]
+            if creative:
+                self.inventory = [BRICK, GRASS, SAND, WOOD, WOOD2, LEAF, LEAF2, STONE, DIRT, WATER]
 
             # The current block the user can place. Hit num keys to cycle.
-            self.block = self.inventory[0]
+            if creative:
+                self.block = self.inventory[0]
 
             # Convenience list of num keys.
-            self.num_keys = [
-                key._1, key._2, key._3, key._4, key._5,
-                key._6, key._7, key._8, key._9, key._0]
+            if creative:
+                self.num_keys = [
+                    key._1, key._2, key._3, key._4, key._5,
+                    key._6, key._7, key._8, key._9, key._0]
 
             # Instance of the model that handles the world.
             self.model = Model()
@@ -782,7 +797,10 @@ def start():
                 elif button == pyglet.window.mouse.RIGHT and block:
                     texture = self.model.world[block]
                     if texture != WATER:
-                        self.model.remove_block(block)             
+                        self.model.remove_block(block)
+                        if survival:
+                            self.block = texture
+                            previous = texture        
             else:
                 self.set_exclusive_mouse(True)
 
@@ -817,6 +835,8 @@ def start():
                 Number representing any modifying keys that were pressed.
 
             """
+
+
             if symbol == key.W:
                 self.strafe[0] -= 1
             elif symbol == key.S:
@@ -851,8 +871,9 @@ def start():
                     if not self.sprinting:
                         self.fov_offset += SPRINT_FOV
                     self.sprinting = True
-            elif symbol == key.TAB:
-                self.flying = not self.flying
+            if creative:
+                if symbol == key.TAB:
+                    self.flying = not self.flying
             elif symbol in self.num_keys:
                 index = (symbol - self.num_keys[0]) % len(self.inventory)
                 self.block = self.inventory[index]
