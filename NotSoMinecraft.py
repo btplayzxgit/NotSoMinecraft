@@ -33,7 +33,7 @@ TERMINAL_VELOCITY = 50
 PLAYER_HEIGHT = 2
 PLAYER_FOV = 80.0
 
-VERSION = '1.1.2'
+VERSION = '1.1.3'
 
 print(f'NotSoMinecraft Engine\nVersion: {VERSION}')
 
@@ -536,7 +536,7 @@ def start():
             self.dy = 0
 
             # A list of blocks the player can place. Hit num keys to cycle.
-            self.inventory = [BRICK, GRASS, SAND, WOOD, WOOD2, LEAF, LEAF2, STONE, DIRT]
+            self.inventory = [BRICK, GRASS, SAND, WOOD, WOOD2, LEAF, LEAF2, STONE, DIRT, WATER]
 
             # The current block the user can place. Hit num keys to cycle.
             self.block = self.inventory[0]
@@ -776,6 +776,7 @@ def start():
                 if (button == mouse.LEFT) or \
                         ((button == mouse.RIGHT) and (modifiers & key.MOD_CTRL)):
                     # ON OSX, control + left click = right click.
+
                     if previous:
                         self.model.add_block(previous, self.block)
                 elif button == pyglet.window.mouse.RIGHT and block:
