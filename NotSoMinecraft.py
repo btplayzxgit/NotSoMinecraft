@@ -33,7 +33,7 @@ TERMINAL_VELOCITY = 50
 PLAYER_HEIGHT = 2
 PLAYER_FOV = 80.0
 
-VERSION = '1.1.5'
+VERSION = '1.1.6'
 
 print(f'NotSoMinecraft Engine\nVersion: {VERSION}')
 
@@ -190,7 +190,7 @@ def start():
             """ Initialize the world by placing all the blocks.
 
             """
-            gen = NoiseGen(452692 - random.randint(1, 6))
+            gen = NoiseGen(452692 - random.randint(0, 25))
 
             n = 128 #size of the world
             s = 1  # step size
