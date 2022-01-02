@@ -33,7 +33,7 @@ TERMINAL_VELOCITY = 50
 PLAYER_HEIGHT = 2
 PLAYER_FOV = 80.0
 
-VERSION = '1.1.3'
+VERSION = '1.1.4'
 
 print(f'NotSoMinecraft Engine\nVersion: {VERSION}')
 
@@ -190,7 +190,7 @@ def start():
             """ Initialize the world by placing all the blocks.
 
             """
-            gen = NoiseGen(452692 + random.randint(0, 1))
+            gen = NoiseGen(452692 - 2)
 
             n = 128 #size of the world
             s = 1  # step size
@@ -1003,7 +1003,7 @@ def start():
 
         """
         # Set the color of "clear", i.e. the sky, in rgba.
-        glClearColor(0.5, 0.69, 132, 0)
+        glClearColor(0.5, 0.69, 168, 0)
         # Enable culling (not rendering) of back-facing facets -- facets that aren't
         # visible to you.
         glEnable(GL_CULL_FACE)
