@@ -33,7 +33,7 @@ TERMINAL_VELOCITY = 50
 PLAYER_HEIGHT = 2
 PLAYER_FOV = 80.0
 
-VERSION = '1.1.8'
+VERSION = '1.1.9'
 
 print(f'NotSoMinecraft Engine\nVersion: {VERSION}')
 
@@ -120,6 +120,7 @@ def start():
     LEAF2 = tex_coords((2, 2), (2, 2), (2, 2))
     WATER = tex_coords((0, 2), (0, 2), (0, 2))
     DIRT = tex_coords((0, 1), (0, 1), (0, 1))
+    DIAMOND = tex_coords((0, 3), (0, 3), (0, 3))
 
     FACES = [
         ( 0, 1, 0),
@@ -228,7 +229,10 @@ def start():
                         self.add_block((x, h, z), SAND, immediate=False)
                     self.add_block((x, h, z), GRASS, immediate=False)
                     for y in xrange(h - 1, 0, -1):
-                        self.add_block((x, y, z), STONE, immediate=False)
+                        if y == 11:
+                            self.add_block((x, y, z), DIAMOND, immediate=False)
+                        else:
+                            self.add_block((x, y, z), STONE, immediate=False)
                     #Maybe add tree at this (x, z)
                     if (h > 20):
                         if random.randrange(0, 1000) > 990:
@@ -547,7 +551,7 @@ def start():
 
             # A list of blocks the player can place. Hit num keys to cycle.
             if creative:
-                self.inventory = [BRICK, GRASS, SAND, WOOD, WOOD2, LEAF, LEAF2, STONE, DIRT, WATER]
+                self.inventory = [BRICK, GRASS, SAND, WOOD, WOOD2, LEAF, LEAF2, STONE, DIRT, DIAMOND]
 
             # The current block the user can place. Hit num keys to cycle.
             if creative:
