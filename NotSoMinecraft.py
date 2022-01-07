@@ -35,7 +35,7 @@ PLAYER_HEIGHT = 2
 PLAYER_FOV = 80.0
 GRAPHICS = 20
 
-VERSION = '1.2.3'
+VERSION = '1.2.4'
 
 print(f'NotSoMinecraft Engine\nVersion: {VERSION}')
 
@@ -1033,7 +1033,7 @@ def start():
                     turtle.listen()
                     turtle.mainloop()
                     turtle.bye()
-            self.label.text = f'FPS: {int(pyglet.clock.get_fps())} Position: x={int(x)} y={int(y)} z={int(z)} Graphics: {GRAPHICS}'
+            self.label.text = f'FPS: {int(pyglet.clock.get_fps())} Position: x={int(x)} y={int(y)} z={int(z)} Graphics: {GRAPHICS} Sky RGBA: {sky_tone}'
             self.label.draw()
 
         def draw_reticle(self):
@@ -1071,10 +1071,12 @@ def start():
 
         """
         # Set the color of "clear", i.e. the sky, in rgba.
+        global sky_tone
         sky_r = 12.5 / GRAPHICS
         sky_g = 12.69 / GRAPHICS
         sky_b = GRAPHICS
         sky_trans = 4 * GRAPHICS
+        sky_tone = (sky_r, sky_g, sky_b, sky_trans)
         glClearColor(float(sky_r), float(sky_g), float(sky_b), float(sky_trans))
         # Enable culling (not rendering) of back-facing facets -- facets that aren't
         # visible to you.
@@ -1084,13 +1086,9 @@ def start():
         # "is generally faster than GL_LINEAR, but it can produce textured images
         # with sharper edges because the transition between texture elements is not
         # as smooth."
-        if GRAPHICS != 0:
+        if 0 < GRAPHICS:
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST)
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST)
-        else:
-            pass
-        if GRAPHICS == 0:
-            pass
         if 0 < GRAPHICS:
             #enable graphics
             glEnable(GL_FOG)
