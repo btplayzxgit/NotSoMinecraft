@@ -33,7 +33,7 @@ TERMINAL_VELOCITY = 50
 PLAYER_HEIGHT = 2
 PLAYER_FOV = 80.0
 
-VERSION = '1.1.9'
+VERSION = '1.2.0'
 
 print(f'NotSoMinecraft Engine\nVersion: {VERSION}')
 
@@ -229,8 +229,12 @@ def start():
                         self.add_block((x, h, z), SAND, immediate=False)
                     self.add_block((x, h, z), GRASS, immediate=False)
                     for y in xrange(h - 1, 0, -1):
+                        if y == 9:
+                            self.add_block((x, y, z), random.choice([STONE, STONE, STONE, DIAMOND]), immediate=False)
+                        if y == 10:
+                            self.add_block((x, y, z), random.choice([STONE, STONE, STONE, DIAMOND]), immediate=False)
                         if y == 11:
-                            self.add_block((x, y, z), DIAMOND, immediate=False)
+                            self.add_block((x, y, z), random.choice([STONE, STONE, STONE, DIAMOND]), immediate=False)
                         else:
                             self.add_block((x, y, z), STONE, immediate=False)
                     #Maybe add tree at this (x, z)
@@ -855,11 +859,13 @@ def start():
             elif symbol == key.SLASH:
                 global keyword
                 global WORDS_IN_CHAT
+                self.set_exclusive_mouse(False)
                 keyword = pyautogui.prompt(title=f'Minecraft {VERSION}', text=f'CHAT\n\nType something in the chat\n{WORDS_IN_CHAT}')
                 if keyword == None:
                     pass
                 else:
                     WORDS_IN_CHAT = WORDS_IN_CHAT + f'\n{username}: {keyword}'
+                self.set_exclusive_mouse(True)
                 
                 
             elif symbol == key.SPACE:
@@ -994,7 +1000,28 @@ def start():
             """ Draw the label in the top left of the screen.
 
             """
+
+            
             x, y, z = self.position
+            if survival:
+                if y < 0:
+                    self.set_exclusive_mouse(False)
+                    try:
+                        turtle.title(f'Minecraft {VERSION}')
+                    except:
+                        turtle.title(f'Minecraft {VERSION}')
+                    turtle.bgcolor('#8B0000')
+                    turtle.write('You Died!', font=('Arial', 32, 'bold'))
+                    turtle.hideturtle()
+                    turtle.penup()
+                    turtle.right(90)
+                    turtle.forward(100)
+                    turtle.back(50)
+                    turtle.write(f'{username} fell out of the map.\nPress F to exit', font=('Arial', 16, 'normal'))
+                    turtle.onkey(exit, 'f')
+                    turtle.listen()
+                    turtle.mainloop()
+                    turtle.bye()
             self.label.text = f'FPS: {int(pyglet.clock.get_fps())} Position: x={int(x)} y={int(y)} z={int(z)}'
             self.label.draw()
 
