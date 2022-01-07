@@ -32,8 +32,9 @@ JUMP_SPEED = math.sqrt(2 * GRAVITY * MAX_JUMP_HEIGHT)
 TERMINAL_VELOCITY = 50
 PLAYER_HEIGHT = 2
 PLAYER_FOV = 80.0
+GRAPHICS = 15
 
-VERSION = '1.2.0'
+VERSION = '1.2.1'
 
 print(f'NotSoMinecraft Engine\nVersion: {VERSION}')
 
@@ -1050,14 +1051,21 @@ def start():
         # the denser the fog in the fog range.
         glFogf(GL_FOG_START, 40.0)
         glFogf(GL_FOG_END, 60.0)
-
+    def setup_high_quality():
+        for light_power in range(GRAPHICS):
+            glEnable(GL_FOG)
+            glFogfv(GL_FOG_COLOR, (GLfloat * 4)(2.3, 4.4, 0.0, 241.6))
+            glHint(GL_FOG_HINT, GL_DONT_CARE)
+            glFogi(GL_FOG_MODE, GL_LINEAR)
+            glFogf(GL_FOG_START, 40.0 - float(GRAPHICS))
+            glFogf(GL_FOG_END, 60.0 + float(GRAPHICS))
 
     def setup():
         """ Basic OpenGL configuration.
 
         """
         # Set the color of "clear", i.e. the sky, in rgba.
-        glClearColor(0.5, 0.69, 168, 0)
+        glClearColor(0.5, 0.69, 121.0 * float(GRAPHICS), 4 * GRAPHICS)
         # Enable culling (not rendering) of back-facing facets -- facets that aren't
         # visible to you.
         glEnable(GL_CULL_FACE)
@@ -1069,6 +1077,7 @@ def start():
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST)
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST)
         setup_fog()
+        setup_high_quality()
 
 
     def main():
