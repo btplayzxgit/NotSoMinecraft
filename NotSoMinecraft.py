@@ -14,6 +14,7 @@ from pyglet.window import key, mouse
 from source.noise_gen import NoiseGen
 import pyautogui
 import turtle
+import os
 
 global WORDS_IN_CHAT
 WORDS_IN_CHAT = ''
@@ -32,14 +33,23 @@ JUMP_SPEED = math.sqrt(2 * GRAVITY * MAX_JUMP_HEIGHT)
 TERMINAL_VELOCITY = 50
 PLAYER_HEIGHT = 2
 PLAYER_FOV = 80.0
-GRAPHICS = 15
+GRAPHICS = 20
 
-VERSION = '1.2.1'
+VERSION = '1.2.3'
 
 print(f'NotSoMinecraft Engine\nVersion: {VERSION}')
 
 
 def start():
+    try:
+        turtle.title(f'Minecraft {VERSION}')
+    except:
+        turtle.title(f'Minecraft {VERSION}')
+    turtle.bgpic('source\\load.gif')
+    turtle.bgcolor('yellow')
+    os.system('source\\kick_load.bat')
+    time.sleep(0.5)
+    turtle.bye()
     try:
         turtle.title(f'Minecraft {VERSION}')
     except:
@@ -1023,7 +1033,7 @@ def start():
                     turtle.listen()
                     turtle.mainloop()
                     turtle.bye()
-            self.label.text = f'FPS: {int(pyglet.clock.get_fps())} Position: x={int(x)} y={int(y)} z={int(z)}'
+            self.label.text = f'FPS: {int(pyglet.clock.get_fps())} Position: x={int(x)} y={int(y)} z={int(z)} Graphics: {GRAPHICS}'
             self.label.draw()
 
         def draw_reticle(self):
@@ -1038,9 +1048,6 @@ def start():
         """ Configure the OpenGL fog properties.
 
         """
-        # Enable fog. Fog "blends a fog color with each rasterized pixel fragment's
-        # post-texturing color."
-        glEnable(GL_FOG)
         # Set the fog color.
         glFogfv(GL_FOG_COLOR, (GLfloat * 4)(0.5, 0.69, 1.0, 1))
         # Say we have no preference between rendering speed and quality.
@@ -1049,11 +1056,10 @@ def start():
         glFogi(GL_FOG_MODE, GL_LINEAR)
         # How close and far away fog starts and ends. The closer the start and end,
         # the denser the fog in the fog range.
-        glFogf(GL_FOG_START, 40.0)
-        glFogf(GL_FOG_END, 60.0)
+        glFogf(GL_FOG_START, 40.0 - float(GRAPHICS))
+        glFogf(GL_FOG_END, 60.0 + float(GRAPHICS))
     def setup_high_quality():
-        for light_power in range(GRAPHICS):
-            glEnable(GL_FOG)
+        for light_power in range(int(GRAPHICS) * 2):
             glFogfv(GL_FOG_COLOR, (GLfloat * 4)(2.3, 4.4, 0.0, 241.6))
             glHint(GL_FOG_HINT, GL_DONT_CARE)
             glFogi(GL_FOG_MODE, GL_LINEAR)
@@ -1065,7 +1071,11 @@ def start():
 
         """
         # Set the color of "clear", i.e. the sky, in rgba.
-        glClearColor(0.5, 0.69, 121.0 * float(GRAPHICS), 4 * GRAPHICS)
+        sky_r = 12.5 / GRAPHICS
+        sky_g = 12.69 / GRAPHICS
+        sky_b = GRAPHICS
+        sky_trans = 4 * GRAPHICS
+        glClearColor(float(sky_r), float(sky_g), float(sky_b), float(sky_trans))
         # Enable culling (not rendering) of back-facing facets -- facets that aren't
         # visible to you.
         glEnable(GL_CULL_FACE)
@@ -1074,10 +1084,18 @@ def start():
         # "is generally faster than GL_LINEAR, but it can produce textured images
         # with sharper edges because the transition between texture elements is not
         # as smooth."
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST)
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST)
-        setup_fog()
-        setup_high_quality()
+        if GRAPHICS != 0:
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST)
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST)
+        else:
+            pass
+        if GRAPHICS == 0:
+            pass
+        if 0 < GRAPHICS:
+            #enable graphics
+            glEnable(GL_FOG)
+            setup_fog()
+            setup_high_quality()
 
 
     def main():
