@@ -35,7 +35,7 @@ PLAYER_HEIGHT = 2
 PLAYER_FOV = 80.0
 GRAPHICS = 20
 
-VERSION = '1.2.5'
+VERSION = '1.2.6'
 
 print(f'NotSoMinecraft Engine\nVersion: {VERSION}')
 
@@ -899,7 +899,7 @@ def start():
                     self.flying = not self.flying
             if creative:
                 if symbol == key.I:
-                    item = pyautogui.confirm(title=f'Minecraft {VERSION}', text='Inventory\n\nSelect item', buttons=['Grass', 'Dirt', 'Stone', 'Bedrock', 'Diamond', 'Gold', 'Wood', 'Birch Wood', 'Leaf', 'Rose Leaf', 'Sand', 'Brick'])
+                    item = pyautogui.confirm(title=f'Minecraft {VERSION}', text='Inventory\n\nSelect item', buttons=['Grass', 'Dirt', 'Stone', 'Bedrock', 'Diamond', 'Gold', 'Wood', 'Birch Wood', 'Leaf', 'Rose Leaf', 'Sand', 'Brick', 'Glowstone'])
                     if item == 'Grass': self.block = GRASS
                     if item == 'Dirt': self.block = DIRT
                     if item == 'Stone': self.block = STONE
@@ -1024,7 +1024,7 @@ def start():
 
             """
 
-            
+            global sky_tone
             x, y, z = self.position
             if survival:
                 if y < 0:
@@ -1034,6 +1034,7 @@ def start():
                     except:
                         turtle.title(f'Minecraft {VERSION}')
                     turtle.bgcolor('#8B0000')
+                    turtle.speed(0)
                     turtle.write('You Died!', font=('Arial', 32, 'bold'))
                     turtle.hideturtle()
                     turtle.penup()
@@ -1045,6 +1046,16 @@ def start():
                     turtle.listen()
                     turtle.mainloop()
                     turtle.bye()
+            if 400 < y:
+                glClearColor(0, 0, 0, 0)
+                sky_tone = (0, 0, 0, 0)
+            if y < 400:
+                sky_r = 12.5 / GRAPHICS
+                sky_g = 12.69 / GRAPHICS
+                sky_b = GRAPHICS * 897
+                sky_trans = 0
+                sky_tone = (sky_r + sky_b, sky_g + sky_b, sky_b * 8, sky_trans)
+                glClearColor(float(sky_r), float(sky_g), float(sky_b), float(sky_trans))
             self.label.text = f'FPS: {int(pyglet.clock.get_fps())} Position: x={int(x)} y={int(y)} z={int(z)} Graphics: {GRAPHICS} Sky RGBA: {sky_tone}'
             self.label.draw()
 
@@ -1086,9 +1097,9 @@ def start():
         global sky_tone
         sky_r = 12.5 / GRAPHICS
         sky_g = 12.69 / GRAPHICS
-        sky_b = GRAPHICS
-        sky_trans = 4 * GRAPHICS
-        sky_tone = (sky_r, sky_g, sky_b, sky_trans)
+        sky_b = GRAPHICS * 897
+        sky_trans = 0
+        sky_tone = (sky_r + sky_b, sky_g + sky_b, sky_b * 8, sky_trans)
         glClearColor(float(sky_r), float(sky_g), float(sky_b), float(sky_trans))
         # Enable culling (not rendering) of back-facing facets -- facets that aren't
         # visible to you.
