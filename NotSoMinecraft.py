@@ -6,15 +6,15 @@ import random
 import time
 
 from collections import deque
-from pyglet import image
-from pyglet.gl import *
-from pyglet.graphics import TextureGroup
-from pyglet.window import key, mouse
 
 from source.noise_gen import NoiseGen
 import pyautogui
 import turtle
 import os
+from pyglet import image
+from pyglet.graphics import TextureGroup
+from pyglet.window import key, mouse
+from pyglet.gl import *
 
 global WORDS_IN_CHAT
 WORDS_IN_CHAT = ''
@@ -35,7 +35,7 @@ PLAYER_HEIGHT = 2
 PLAYER_FOV = 80.0
 GRAPHICS = 20
 
-VERSION = '1.2.6'
+VERSION = '1.2.7'
 
 print(f'NotSoMinecraft Engine\nVersion: {VERSION}')
 
@@ -46,9 +46,11 @@ def start():
     except:
         turtle.title(f'Minecraft {VERSION}')
     turtle.bgpic('source\\load.gif')
-    turtle.bgcolor('yellow')
+    turtle.bgcolor('lightblue')
+    turtle.setup(1800, 900)
     os.system('source\\kick_load.bat')
-    time.sleep(0.5)
+    
+    time.sleep(2)
     turtle.bye()
     try:
         turtle.title(f'Minecraft {VERSION}')
@@ -899,7 +901,7 @@ def start():
                     self.flying = not self.flying
             if creative:
                 if symbol == key.I:
-                    item = pyautogui.confirm(title=f'Minecraft {VERSION}', text='Inventory\n\nSelect item', buttons=['Grass', 'Dirt', 'Stone', 'Bedrock', 'Diamond', 'Gold', 'Wood', 'Birch Wood', 'Leaf', 'Rose Leaf', 'Sand', 'Brick', 'Glowstone'])
+                    item = pyautogui.confirm(title=f'Minecraft {VERSION}', text='Inventory\n\nSelect item', buttons=['Grass', 'Dirt', 'Stone', 'Bedrock', 'Diamond', 'Gold', 'Wood', 'Birch Wood', 'Leaf', 'Rose Leaf', 'Sand', 'Brick'])
                     if item == 'Grass': self.block = GRASS
                     if item == 'Dirt': self.block = DIRT
                     if item == 'Stone': self.block = STONE
