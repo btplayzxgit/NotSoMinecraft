@@ -35,7 +35,7 @@ PLAYER_HEIGHT = 2
 PLAYER_FOV = 80.0
 GRAPHICS = 20
 
-VERSION = '1.2.4'
+VERSION = '1.2.5'
 
 print(f'NotSoMinecraft Engine\nVersion: {VERSION}')
 
@@ -57,7 +57,7 @@ def start():
     turtle.bgcolor('#654321')
     turtle.bgpic('source\\startup.gif')
     turtle.exitonclick()
-    pyautogui.alert(title=f'Minecraft {VERSION}', text='CONTROLS\n\nW - FORWARD\nS - BACKWARDS\nA - LEFT\nD - RIGHT\nC - CROUCH\nSPACE - JUMP\nESC - PAUSE THE GAME\nTAB - FLY\n/ - CHAT\nR - SPRINT\nNUMBER KEYS - ITEM IN INVENTORY', button='PLAY')
+    pyautogui.alert(title=f'Minecraft {VERSION}', text='CONTROLS\n\nW - FORWARD\nS - BACKWARDS\nA - LEFT\nD - RIGHT\nC - CROUCH\nSPACE - JUMP\nESC - PAUSE THE GAME\nTAB - FLY\n/ - CHAT\nR - SPRINT\nI - INVENTORY', button='PLAY')
      # About the height of a block.
     # To derive the formula for calculating jump speed, first solve
     #    v_t = v_0 + a * t
@@ -132,6 +132,8 @@ def start():
     WATER = tex_coords((0, 2), (0, 2), (0, 2))
     DIRT = tex_coords((0, 1), (0, 1), (0, 1))
     DIAMOND = tex_coords((0, 3), (0, 3), (0, 3))
+    BEDROCK = tex_coords((1, 3), (1, 3), (1, 3))
+    GOLD = tex_coords((2, 3), (2, 3), (2, 3))
 
     FACES = [
         ( 0, 1, 0),
@@ -241,11 +243,13 @@ def start():
                     self.add_block((x, h, z), GRASS, immediate=False)
                     for y in xrange(h - 1, 0, -1):
                         if y == 9:
-                            self.add_block((x, y, z), random.choice([STONE, STONE, STONE, DIAMOND]), immediate=False)
-                        if y == 10:
-                            self.add_block((x, y, z), random.choice([STONE, STONE, STONE, DIAMOND]), immediate=False)
-                        if y == 11:
-                            self.add_block((x, y, z), random.choice([STONE, STONE, STONE, DIAMOND]), immediate=False)
+                            self.add_block((x, y, z), random.choice([STONE, GOLD, DIAMOND]), immediate=False)
+                        elif y == 10:
+                            self.add_block((x, y, z), random.choice([STONE, GOLD, DIAMOND]), immediate=False)
+                        elif y == 11:
+                            self.add_block((x, y, z), random.choice([STONE, GOLD, DIAMOND]), immediate=False)
+                        elif y == 1:
+                            self.add_block((x, y, z), BEDROCK, immediate=False)
                         else:
                             self.add_block((x, y, z), STONE, immediate=False)
                     #Maybe add tree at this (x, z)
@@ -564,20 +568,6 @@ def start():
             # Velocity in the y (upward) direction.
             self.dy = 0
 
-            # A list of blocks the player can place. Hit num keys to cycle.
-            if creative:
-                self.inventory = [BRICK, GRASS, SAND, WOOD, WOOD2, LEAF, LEAF2, STONE, DIRT, DIAMOND]
-
-            # The current block the user can place. Hit num keys to cycle.
-            if creative:
-                self.block = self.inventory[0]
-
-            # Convenience list of num keys.
-            if creative:
-                self.num_keys = [
-                    key._1, key._2, key._3, key._4, key._5,
-                    key._6, key._7, key._8, key._9, key._0]
-
             # Instance of the model that handles the world.
             self.model = Model()
 
@@ -813,14 +803,25 @@ def start():
                         try:
                             self.model.add_block(previous, self.block)
                         except:
-                            pyautogui.alert(title=f'Minecraft {VERSION}', text='There is no block to place..\nStart mining to get blocks!', button='Alright')
+                            if survival:
+                                self.set_exclusive_mouse(False)
+                                pyautogui.alert(title=f'Minecraft {VERSION}', text='There is no block to place..\nStart mining to get blocks!', button='Alright')
+                                self.set_exclusive_mouse(True)
                 elif button == pyglet.window.mouse.RIGHT and block:
                     texture = self.model.world[block]
-                    if texture != WATER:
-                        self.model.remove_block(block)
-                        if survival:
-                            self.block = texture
-                            previous = texture        
+                    if creative:
+                        if texture != WATER:
+                            self.model.remove_block(block)
+                            if survival:
+                                self.block = texture
+                                previous = texture     
+                    if survival:
+                        if texture != WATER:
+                            if texture != BEDROCK:
+                                self.model.remove_block(block)
+                                if survival:
+                                    self.block = texture
+                                    previous = texture     
             else:
                 self.set_exclusive_mouse(True)
 
@@ -897,9 +898,20 @@ def start():
                 if symbol == key.TAB:
                     self.flying = not self.flying
             if creative:
-                if symbol in self.num_keys:
-                    index = (symbol - self.num_keys[0]) % len(self.inventory)
-                    self.block = self.inventory[index]
+                if symbol == key.I:
+                    item = pyautogui.confirm(title=f'Minecraft {VERSION}', text='Inventory\n\nSelect item', buttons=['Grass', 'Dirt', 'Stone', 'Bedrock', 'Diamond', 'Gold', 'Wood', 'Birch Wood', 'Leaf', 'Rose Leaf', 'Sand', 'Brick'])
+                    if item == 'Grass': self.block = GRASS
+                    if item == 'Dirt': self.block = DIRT
+                    if item == 'Stone': self.block = STONE
+                    if item == 'Bedrock': self.block = BEDROCK
+                    if item == 'Diamond': self.block = DIAMOND
+                    if item == 'Gold': self.block = GOLD
+                    if item == 'Wood': self.block = WOOD
+                    if item == 'Birch Wood': self.block = WOOD2
+                    if item == 'Leaf': self.block = LEAF
+                    if item == 'Rose Leaf': self.block = LEAF2
+                    if item == 'Sand': self.block = SAND
+                    if item == 'Brick': self.block = BRICK
 
         def on_key_release(self, symbol, modifiers):
             """ Called when the player releases a key. See pyglet docs for key
@@ -1104,7 +1116,12 @@ def start():
         window.set_exclusive_mouse(True)
         setup()
         pyglet.app.run()
-    main()
+    try:
+        main()
+    except Exception as e:
+        print(f'NotSoMinecraft failed to start:\n\n{e}')
+
+        
 
 
 
