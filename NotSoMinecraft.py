@@ -35,7 +35,7 @@ PLAYER_HEIGHT = 2
 PLAYER_FOV = 80.0
 GRAPHICS = 20
 
-VERSION = '1.2.7'
+VERSION = '1.2.8'
 
 print(f'NotSoMinecraft Engine\nVersion: {VERSION}')
 
@@ -46,8 +46,7 @@ def start():
     except:
         turtle.title(f'Minecraft {VERSION}')
     turtle.bgpic('source\\load.gif')
-    turtle.bgcolor('lightblue')
-    turtle.setup(1800, 900)
+    turtle.setup(1135, 653)
     os.system('source\\kick_load.bat')
     
     time.sleep(2)
@@ -56,8 +55,8 @@ def start():
         turtle.title(f'Minecraft {VERSION}')
     except:
         turtle.title(f'Minecraft {VERSION}')
-    turtle.bgcolor('#654321')
     turtle.bgpic('source\\startup.gif')
+    turtle.setup(1202, 568)
     turtle.exitonclick()
     pyautogui.alert(title=f'Minecraft {VERSION}', text='CONTROLS\n\nW - FORWARD\nS - BACKWARDS\nA - LEFT\nD - RIGHT\nC - CROUCH\nSPACE - JUMP\nESC - PAUSE THE GAME\nTAB - FLY\n/ - CHAT\nR - SPRINT\nI - INVENTORY', button='PLAY')
      # About the height of a block.
@@ -136,6 +135,8 @@ def start():
     DIAMOND = tex_coords((0, 3), (0, 3), (0, 3))
     BEDROCK = tex_coords((1, 3), (1, 3), (1, 3))
     GOLD = tex_coords((2, 3), (2, 3), (2, 3))
+    GLOWSTONE = tex_coords((3, 3), (3, 3), (3, 3))
+    COBBLESTONE = tex_coords((3, 2), (3, 2), (3, 2))
 
     FACES = [
         ( 0, 1, 0),
@@ -216,11 +217,13 @@ def start():
             """ Initialize the world by placing all the blocks.
 
             """
-            gen = NoiseGen(452692 - random.randint(0, 25))
+            global gen
+            gen = NoiseGen(452692 - random.randint(0, 6000))
 
-            n = 128 #size of the world
+            n = 500 #size of the world
             s = 1  # step size
             y = 0  # initial y height
+            j = 0 # terrian generation time
             
             #too lazy to do this properly lol
             heightMap = []
@@ -233,11 +236,12 @@ def start():
 
             #Generate the world
             for x in xrange(0, n, s):
+                j = j + 1
                 for z in xrange(0, n, s):
                     h = heightMap[z + x * n]
                     if (h < 15):
                         self.add_block((x, h, z), SAND, immediate=False)
-                        for y in range (h, 15):
+                        for y in range(h, 15):
                             self.add_block((x, y, z), WATER, immediate=False)
                         continue
                     if (h < 18):
@@ -245,15 +249,15 @@ def start():
                     self.add_block((x, h, z), GRASS, immediate=False)
                     for y in xrange(h - 1, 0, -1):
                         if y == 9:
-                            self.add_block((x, y, z), random.choice([STONE, GOLD, DIAMOND]), immediate=False)
+                            self.add_block((x, y, z), random.choice([STONE, STONE, STONE, STONE, STONE, STONE, COBBLESTONE, STONE, GOLD, STONE, DIAMOND, STONE, STONE, STONE]), immediate=False)
                         elif y == 10:
-                            self.add_block((x, y, z), random.choice([STONE, GOLD, DIAMOND]), immediate=False)
+                            self.add_block((x, y, z), random.choice([STONE, STONE, STONE, STONE, STONE, STONE, COBBLESTONE, STONE, GOLD, STONE, DIAMOND, STONE, STONE, STONE]), immediate=False)
                         elif y == 11:
-                            self.add_block((x, y, z), random.choice([STONE, GOLD, DIAMOND]), immediate=False)
+                            self.add_block((x, y, z), random.choice([STONE, STONE, STONE, STONE, STONE, STONE, COBBLESTONE, STONE, GOLD, STONE, DIAMOND, STONE, STONE, STONE]), immediate=False)
                         elif y == 1:
                             self.add_block((x, y, z), BEDROCK, immediate=False)
                         else:
-                            self.add_block((x, y, z), STONE, immediate=False)
+                            self.add_block((x, y, z), random.choice([STONE, STONE, STONE, STONE, STONE, COBBLESTONE, STONE, STONE, STONE, STONE, STONE]), immediate=False)
                     #Maybe add tree at this (x, z)
                     if (h > 20):
                         if random.randrange(0, 1000) > 990:
@@ -272,6 +276,7 @@ def start():
                                 for lx in xrange(x + -2, x + 3): 
                                     for ly in xrange(3):
                                         self.add_block((lx, leafh + ly, lz), leaf_type, immediate=False)
+                print(f'Generating terrian... {j}/{n}%')
 
         def hit_test(self, position, vector, max_distance=8):
             """ Line of sight search from current position. If a block is
@@ -901,7 +906,7 @@ def start():
                     self.flying = not self.flying
             if creative:
                 if symbol == key.I:
-                    item = pyautogui.confirm(title=f'Minecraft {VERSION}', text='Inventory\n\nSelect item', buttons=['Grass', 'Dirt', 'Stone', 'Bedrock', 'Diamond', 'Gold', 'Wood', 'Birch Wood', 'Leaf', 'Rose Leaf', 'Sand', 'Brick'])
+                    item = pyautogui.confirm(title=f'Minecraft {VERSION}', text='Inventory\n\nSelect item', buttons=['Grass', 'Dirt', 'Stone', 'Bedrock', 'Diamond', 'Gold', 'Wood', 'Birch Wood', 'Leaf', 'Rose Leaf', 'Sand', 'Brick', 'Glowstone', 'Cobblestone'])
                     if item == 'Grass': self.block = GRASS
                     if item == 'Dirt': self.block = DIRT
                     if item == 'Stone': self.block = STONE
@@ -914,6 +919,8 @@ def start():
                     if item == 'Rose Leaf': self.block = LEAF2
                     if item == 'Sand': self.block = SAND
                     if item == 'Brick': self.block = BRICK
+                    if item == 'Glowstone': self.block = GLOWSTONE
+                    if item == 'Cobblestone': self.block = COBBLESTONE
 
         def on_key_release(self, symbol, modifiers):
             """ Called when the player releases a key. See pyglet docs for key
@@ -1058,7 +1065,10 @@ def start():
                 sky_trans = 0
                 sky_tone = (sky_r + sky_b, sky_g + sky_b, sky_b * 8, sky_trans)
                 glClearColor(float(sky_r), float(sky_g), float(sky_b), float(sky_trans))
-            self.label.text = f'FPS: {int(pyglet.clock.get_fps())} Position: x={int(x)} y={int(y)} z={int(z)} Graphics: {GRAPHICS} Sky RGBA: {sky_tone}'
+            global water_poses
+            global PLAYER_HEIGHT
+            global gen
+            self.label.text = f'FPS: {int(pyglet.clock.get_fps())} Position: x={int(x)} y={int(y)} z={int(z)} Graphics: {GRAPHICS} Sky RGBA: {sky_tone} Terrian Seed: {gen.seed}'
             self.label.draw()
 
         def draw_reticle(self):
