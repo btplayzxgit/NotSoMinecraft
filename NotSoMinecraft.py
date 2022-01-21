@@ -41,6 +41,8 @@ TERMINAL_VELOCITY = 50
 PLAYER_HEIGHT = 2
 PLAYER_FOV = 80.0
 TITLE = 'NotSoMinecraft'
+TIME_ZONE = 0
+BL_SKY = False
 
 print(f'NotSoMinecraft Engine')
 
@@ -1028,6 +1030,63 @@ def start():
                 glTranslatef(-x, -y+0.2, -z)
             else:
                 glTranslatef(-x, -y, -z)
+        def time_system(self):
+            global TIME_ZONE
+            global BL_SKY
+            if TIME_ZONE == 0:
+                BL_SKY = False
+                sky_r = 12.5 / grp
+                sky_g = 12.69 / grp
+                sky_b = grp * 897
+                sky_trans = 0
+                glEnable(GL_FOG)
+                glClearColor(sky_r, sky_g, sky_b, sky_trans)
+                glDisable(GL_LIGHTING)
+                glEnable(GL_LIGHT0)
+                glEnable(GL_LIGHT1)
+                glEnable(GL_LIGHT2)
+                glEnable(GL_LIGHT3)
+                glEnable(GL_LIGHT4)
+                glEnable(GL_LIGHT5)
+                glEnable(GL_LIGHT6)
+                glEnable(GL_LIGHT7)
+                TIME_ZONE = TIME_ZONE + 1
+            else:
+                if TIME_ZONE != 20000:
+                    if TIME_ZONE != 40000:
+                        TIME_ZONE = TIME_ZONE + 1
+            if TIME_ZONE == 20000:
+                BL_SKY = True
+                glDisable(GL_FOG)
+                sky_r = 0
+                sky_g = 0
+                sky_b = 0
+                sky_trans = 0
+                glClearColor(sky_r, sky_g, sky_b, sky_trans)
+                glEnable(GL_LIGHTING)
+                glDisable(GL_LIGHT0)
+                glDisable(GL_LIGHT1)
+                glDisable(GL_LIGHT2)
+                glDisable(GL_LIGHT3)
+                glDisable(GL_LIGHT4)
+                glDisable(GL_LIGHT5)
+                glDisable(GL_LIGHT6)
+                glDisable(GL_LIGHT7)
+                TIME_ZONE = TIME_ZONE + 1
+            else:
+                if TIME_ZONE != 1:
+                    if TIME_ZONE != 20000:
+                        if TIME_ZONE != 40000:
+                            TIME_ZONE = TIME_ZONE + 1
+            if TIME_ZONE == 40000: TIME_ZONE = 0
+            if BL_SKY:
+                sky_r = 0
+                sky_g = 0
+                sky_b = 0
+                sky_trans = 0
+                glClearColor(sky_r, sky_g, sky_b, sky_trans)
+
+
 
         def on_draw(self):
             """ Called by pyglet to draw the canvas.
@@ -1041,6 +1100,7 @@ def start():
             self.set_2d()
             self.draw_label()
             self.draw_reticle()
+            self.time_system()
 
         def draw_focused_block(self):
             """ Draw black edges around the block that is currently under the
@@ -1062,7 +1122,6 @@ def start():
 
             """
 
-            global sky_tone
             x, y, z = self.position
             if survival:
                 if y < 0:
@@ -1084,18 +1143,12 @@ def start():
                     turtle.listen()
                     turtle.mainloop()
                     turtle.bye()
-            if 400 < y:
-                glClearColor(0, 0, 0, 0)
-                sky_tone = (0, 0, 0, 0)
-            if y < 400:
-                sky_r = 12.5 / grp
-                sky_g = 12.69 / grp
-                sky_b = grp * 897
-                sky_trans = 0
-                sky_tone = (sky_r + sky_b, sky_g + sky_b, sky_b * 8, sky_trans)
-                glClearColor(float(sky_r), float(sky_g), float(sky_b), float(sky_trans))
+            if 400 < y: glClearColor(0, 0, 0, 0)
+            if y < 400: glClearColor(float(sky_r), float(sky_g), float(sky_b), float(sky_trans))
+            if not BL_SKY: sky_tone = (sky_r + sky_b, sky_g + sky_b, sky_b * 8, sky_trans)
+            else: sky_tone = (0, 0, 0, 0)
             global gen
-            self.label.text = f'FPS: {int(pyglet.clock.get_fps())} Position: x={int(x)} y={int(y)} z={int(z)} Sky RGBA: {sky_tone} Terrian Seed: {gen.seed}'
+            self.label.text = f'FPS: {int(pyglet.clock.get_fps())} Position: x={int(x)} y={int(y)} z={int(z)} Sky RGBA: {sky_tone} Terrian Seed: {gen.seed} Time: {TIME_ZONE}'
             self.label.draw()
 
         def draw_reticle(self):
@@ -1133,13 +1186,19 @@ def start():
 
         """
         # Set the color of "clear", i.e. the sky, in rgba.
-        global sky_tone
-        sky_r = 12.5 / grp
-        sky_g = 12.69 / grp
-        sky_b = grp * 897
-        sky_trans = 0
-        sky_tone = (sky_r + sky_b, sky_g + sky_b, sky_b * 8, sky_trans)
-        glClearColor(float(sky_r), float(sky_g), float(sky_b), float(sky_trans))
+        global sky_r, sky_g, sky_b, sky_trans
+        if BL_SKY == False:
+            sky_r = 12.5 / grp
+            sky_g = 12.69 / grp
+            sky_b = grp * 897
+            sky_trans = 0
+            glClearColor(sky_r, sky_g, sky_b, sky_trans)
+        if TIME_ZONE == 20000:
+            sky_r = 0
+            sky_g = 0
+            sky_b = 0
+            sky_trans = 0
+            glClearColor(sky_r, sky_g, sky_b, sky_trans)
         # Enable culling (not rendering) of back-facing facets -- facets that aren't
         # visible to you.
         glEnable(GL_CULL_FACE)
@@ -1153,7 +1212,9 @@ def start():
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST)
         if 0 < grp:
             #enable graphics
+            print('Enabling shaders...')
             glEnable(GL_FOG)
+            glDisable(GL_LIGHTING)
             glEnable(GL_LIGHT0)
             glEnable(GL_LIGHT1)
             glEnable(GL_LIGHT2)
@@ -1162,6 +1223,8 @@ def start():
             glEnable(GL_LIGHT5)
             glEnable(GL_LIGHT6)
             glEnable(GL_LIGHT7)
+            glEnable(GL_BLEND)
+            glBlendFunc(GL_ONE, GL_ONE)
             print('Shaders enabled')
             setup_fog()
             setup_high_quality()
