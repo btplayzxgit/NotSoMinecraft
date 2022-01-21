@@ -1,20 +1,27 @@
 from __future__ import division
+try:
+    import sys
+    import math
+    import random
+    import time
 
-import sys
-import math
-import random
-import time
+    from collections import deque
 
-from collections import deque
+    from source.noise_gen import NoiseGen
+    import pyautogui
+    import turtle
+    import os
+    from pyglet import image
+    from pyglet.graphics import TextureGroup
+    from pyglet.window import key, mouse
+    from pyglet.gl import *
+except ImportError as e:
+    import os
+    print(f'Realized Error: {e}\nInstalling...')
+    os.system('source\\kick_load.bat')
+else:
+    print('Installed NotSoMinecraft Requirements')
 
-from source.noise_gen import NoiseGen
-import pyautogui
-import turtle
-import os
-from pyglet import image
-from pyglet.graphics import TextureGroup
-from pyglet.window import key, mouse
-from pyglet.gl import *
 
 global WORDS_IN_CHAT
 WORDS_IN_CHAT = ''
@@ -33,18 +40,24 @@ JUMP_SPEED = math.sqrt(2 * GRAVITY * MAX_JUMP_HEIGHT)
 TERMINAL_VELOCITY = 50
 PLAYER_HEIGHT = 2
 PLAYER_FOV = 80.0
-GRAPHICS = 20
+TITLE = 'NotSoMinecraft'
 
-VERSION = '1.2.8'
+print(f'NotSoMinecraft Engine')
 
-print(f'NotSoMinecraft Engine\nVersion: {VERSION}')
+
+class NotSoMinecraftTerrian:
+    seed = 452692 - random.randint(0, 6000)
+    def complexify_seed(): seed = NotSoMinecraftTerrian.seed; seed = seed - seed * seed + seed / 8
+
+
 
 
 def start():
+    grp = 20
     try:
-        turtle.title(f'Minecraft {VERSION}')
+        turtle.title(f'{TITLE}')
     except:
-        turtle.title(f'Minecraft {VERSION}')
+        turtle.title(f'{TITLE}')
     turtle.bgpic('source\\load.gif')
     turtle.setup(1135, 653)
     os.system('source\\kick_load.bat')
@@ -52,13 +65,13 @@ def start():
     time.sleep(2)
     turtle.bye()
     try:
-        turtle.title(f'Minecraft {VERSION}')
+        turtle.title(f'{TITLE}')
     except:
-        turtle.title(f'Minecraft {VERSION}')
+        turtle.title(f'{TITLE}')
     turtle.bgpic('source\\startup.gif')
     turtle.setup(1202, 568)
     turtle.exitonclick()
-    pyautogui.alert(title=f'Minecraft {VERSION}', text='CONTROLS\n\nW - FORWARD\nS - BACKWARDS\nA - LEFT\nD - RIGHT\nC - CROUCH\nSPACE - JUMP\nESC - PAUSE THE GAME\nTAB - FLY\n/ - CHAT\nR - SPRINT\nI - INVENTORY', button='PLAY')
+    pyautogui.alert(title=f'{TITLE}', text='CONTROLS\n\nW - FORWARD\nS - BACKWARDS\nA - LEFT\nD - RIGHT\nC - CROUCH\nSPACE - JUMP\nESC - PAUSE THE GAME\nTAB - FLY\n/ - CHAT\nR - SPRINT\nI - INVENTORY', button='PLAY')
      # About the height of a block.
     # To derive the formula for calculating jump speed, first solve
     #    v_t = v_0 + a * t
@@ -74,7 +87,7 @@ def start():
     creative = False
     survival = False
 
-    gamemode = pyautogui.confirm(title=f'Minecraft {VERSION}', text='Select gamemode', buttons=['Creative', 'Survival'])
+    gamemode = pyautogui.confirm(title=f'{TITLE}', text='Select gamemode', buttons=['Creative', 'Survival'])
     if gamemode == None: quit()
     if gamemode == 'Creative': creative, survival = True, False
     if gamemode == 'Survival': creative, survival = False, True
@@ -94,6 +107,12 @@ def start():
             x-n,y-n,z+n, x+n,y-n,z+n, x+n,y+n,z+n, x-n,y+n,z+n,  # front
             x+n,y-n,z-n, x-n,y-n,z-n, x-n,y+n,z-n, x+n,y+n,z-n,  # back
         ]
+
+    def calculate_biom():
+        if NotSoMinecraftTerrian.seed == 12: return 'dessert'
+        elif NotSoMinecraftTerrian.seed == 13: return 'dessert'
+        elif NotSoMinecraftTerrian.seed == 14: return 'dessert'
+        else: return 'grassland'
 
 
     def tex_coord(x, y, n=4):
@@ -129,7 +148,7 @@ def start():
     WOOD = tex_coords((3, 1), (3, 1), (3, 1))
     WOOD2 = tex_coords((1, 2), (1, 2), (1, 2))
     LEAF = tex_coords((3, 0), (3, 0), (3, 0))
-    LEAF2 = tex_coords((2, 2), (2, 2), (2, 2))
+    CACTUS = tex_coords((2, 2), (2, 2), (2, 2))
     WATER = tex_coords((0, 2), (0, 2), (0, 2))
     DIRT = tex_coords((0, 1), (0, 1), (0, 1))
     DIAMOND = tex_coords((0, 3), (0, 3), (0, 3))
@@ -137,6 +156,7 @@ def start():
     GOLD = tex_coords((2, 3), (2, 3), (2, 3))
     GLOWSTONE = tex_coords((3, 3), (3, 3), (3, 3))
     COBBLESTONE = tex_coords((3, 2), (3, 2), (3, 2))
+    GLASS = None
 
     FACES = [
         ( 0, 1, 0),
@@ -218,12 +238,14 @@ def start():
 
             """
             global gen
-            gen = NoiseGen(452692 - random.randint(0, 6000))
+            gen = NoiseGen(NotSoMinecraftTerrian.seed)
 
             n = 500 #size of the world
             s = 1  # step size
             y = 0  # initial y height
             j = 0 # terrian generation time
+
+            biom = calculate_biom() # get the biom
             
             #too lazy to do this properly lol
             heightMap = []
@@ -242,11 +264,13 @@ def start():
                     if (h < 15):
                         self.add_block((x, h, z), SAND, immediate=False)
                         for y in range(h, 15):
-                            self.add_block((x, y, z), WATER, immediate=False)
+                            if biom == 'grassland': self.add_block((x, y, z), WATER, immediate=False)
+                            else: self.add_block((x, y, z), SAND, immediate=False)
                         continue
                     if (h < 18):
                         self.add_block((x, h, z), SAND, immediate=False)
-                    self.add_block((x, h, z), GRASS, immediate=False)
+                    if biom == 'grassland': self.add_block((x, h, z), GRASS, immediate=False)
+                    else: self.add_block((x, h, z), SAND, immediate=False)
                     for y in xrange(h - 1, 0, -1):
                         if y == 9:
                             self.add_block((x, y, z), random.choice([STONE, STONE, STONE, STONE, STONE, STONE, COBBLESTONE, STONE, GOLD, STONE, DIAMOND, STONE, STONE, STONE]), immediate=False)
@@ -259,23 +283,27 @@ def start():
                         else:
                             self.add_block((x, y, z), random.choice([STONE, STONE, STONE, STONE, STONE, COBBLESTONE, STONE, STONE, STONE, STONE, STONE]), immediate=False)
                     #Maybe add tree at this (x, z)
-                    if (h > 20):
-                        if random.randrange(0, 1000) > 990:
-                            treeHeight = random.randint(5, 7)
-                            #Tree trunk
-                            wood_type = random.choice([WOOD, WOOD2])
-                            for y in xrange(h + 1, h + treeHeight):
-                                self.add_block((x, y, z), wood_type, immediate=False)
-                            #Tree leaves
-                            leafh = h + treeHeight
-                            if wood_type == WOOD:
-                                leaf_type = LEAF
-                            elif wood_type == WOOD2:
-                                leaf_type = random.choice([LEAF, LEAF2])
-                            for lz in xrange(z + -2, z + 3):
-                                for lx in xrange(x + -2, x + 3): 
-                                    for ly in xrange(3):
-                                        self.add_block((lx, leafh + ly, lz), leaf_type, immediate=False)
+                    if biom != 'dessert':
+                        if (h > 20):
+                            if random.randrange(0, 1000) > 990:
+                                treeHeight = random.randint(5, 7)
+                                #Tree trunk
+                                wood_type = random.choice([WOOD, WOOD2])
+                                for y in xrange(h + 1, h + treeHeight):
+                                    self.add_block((x, y, z), wood_type, immediate=False)
+                                #Tree leaves
+                                leafh = h + treeHeight
+                                for lz in xrange(z + -2, z + 3):
+                                    for lx in xrange(x + -2, x + 3): 
+                                        for ly in xrange(3):
+                                            self.add_block((lx, leafh + ly, lz), LEAF, immediate=False)
+                    else:
+                        if (h > 20):
+                            if random.randrange(0, 1000) > 990:
+                                #generate the cactus
+                                cactusHeight = random.randint(5, 7)
+                                for y in xrange(h + 1, h + cactusHeight):
+                                    self.add_block((x, y, z), CACTUS, immediate=False)
                 print(f'Generating terrian... {j}/{n}%')
 
         def hit_test(self, position, vector, max_distance=8):
@@ -812,7 +840,7 @@ def start():
                         except:
                             if survival:
                                 self.set_exclusive_mouse(False)
-                                pyautogui.alert(title=f'Minecraft {VERSION}', text='There is no block to place..\nStart mining to get blocks!', button='Alright')
+                                pyautogui.alert(title=f'{TITLE}', text='There is no block to place..\nStart mining to get blocks!', button='Alright')
                                 self.set_exclusive_mouse(True)
                 elif button == pyglet.window.mouse.RIGHT and block:
                     texture = self.model.world[block]
@@ -879,7 +907,7 @@ def start():
                 global keyword
                 global WORDS_IN_CHAT
                 self.set_exclusive_mouse(False)
-                keyword = pyautogui.prompt(title=f'Minecraft {VERSION}', text=f'CHAT\n\nType something in the chat\n{WORDS_IN_CHAT}')
+                keyword = pyautogui.prompt(title=f'{TITLE}', text=f'CHAT\n\nType something in the chat\n{WORDS_IN_CHAT}')
                 if keyword == None:
                     pass
                 else:
@@ -906,7 +934,7 @@ def start():
                     self.flying = not self.flying
             if creative:
                 if symbol == key.I:
-                    item = pyautogui.confirm(title=f'Minecraft {VERSION}', text='Inventory\n\nSelect item', buttons=['Grass', 'Dirt', 'Stone', 'Bedrock', 'Diamond', 'Gold', 'Wood', 'Birch Wood', 'Leaf', 'Rose Leaf', 'Sand', 'Brick', 'Glowstone', 'Cobblestone'])
+                    item = pyautogui.confirm(title=f'{TITLE}', text='Inventory\n\nSelect item', buttons=['Grass', 'Dirt', 'Stone', 'Bedrock', 'Diamond', 'Gold', 'Wood', 'Birch Wood', 'Leaf', 'Sand', 'Brick', 'Glowstone', 'Cobblestone', 'Glass', 'Cactus'])
                     if item == 'Grass': self.block = GRASS
                     if item == 'Dirt': self.block = DIRT
                     if item == 'Stone': self.block = STONE
@@ -916,11 +944,12 @@ def start():
                     if item == 'Wood': self.block = WOOD
                     if item == 'Birch Wood': self.block = WOOD2
                     if item == 'Leaf': self.block = LEAF
-                    if item == 'Rose Leaf': self.block = LEAF2
                     if item == 'Sand': self.block = SAND
                     if item == 'Brick': self.block = BRICK
                     if item == 'Glowstone': self.block = GLOWSTONE
                     if item == 'Cobblestone': self.block = COBBLESTONE
+                    if item == 'Glass': self.block = GLASS
+                    if item == 'Cactus': self.block = CACTUS
 
         def on_key_release(self, symbol, modifiers):
             """ Called when the player releases a key. See pyglet docs for key
@@ -1039,9 +1068,9 @@ def start():
                 if y < 0:
                     self.set_exclusive_mouse(False)
                     try:
-                        turtle.title(f'Minecraft {VERSION}')
+                        turtle.title(f'{TITLE}')
                     except:
-                        turtle.title(f'Minecraft {VERSION}')
+                        turtle.title(f'{TITLE}')
                     turtle.bgcolor('#8B0000')
                     turtle.speed(0)
                     turtle.write('You Died!', font=('Arial', 32, 'bold'))
@@ -1059,16 +1088,14 @@ def start():
                 glClearColor(0, 0, 0, 0)
                 sky_tone = (0, 0, 0, 0)
             if y < 400:
-                sky_r = 12.5 / GRAPHICS
-                sky_g = 12.69 / GRAPHICS
-                sky_b = GRAPHICS * 897
+                sky_r = 12.5 / grp
+                sky_g = 12.69 / grp
+                sky_b = grp * 897
                 sky_trans = 0
                 sky_tone = (sky_r + sky_b, sky_g + sky_b, sky_b * 8, sky_trans)
                 glClearColor(float(sky_r), float(sky_g), float(sky_b), float(sky_trans))
-            global water_poses
-            global PLAYER_HEIGHT
             global gen
-            self.label.text = f'FPS: {int(pyglet.clock.get_fps())} Position: x={int(x)} y={int(y)} z={int(z)} Graphics: {GRAPHICS} Sky RGBA: {sky_tone} Terrian Seed: {gen.seed}'
+            self.label.text = f'FPS: {int(pyglet.clock.get_fps())} Position: x={int(x)} y={int(y)} z={int(z)} Sky RGBA: {sky_tone} Terrian Seed: {gen.seed}'
             self.label.draw()
 
         def draw_reticle(self):
@@ -1091,15 +1118,15 @@ def start():
         glFogi(GL_FOG_MODE, GL_LINEAR)
         # How close and far away fog starts and ends. The closer the start and end,
         # the denser the fog in the fog range.
-        glFogf(GL_FOG_START, 40.0 - float(GRAPHICS))
-        glFogf(GL_FOG_END, 60.0 + float(GRAPHICS))
+        glFogf(GL_FOG_START, 40.0 - float(grp))
+        glFogf(GL_FOG_END, 60.0 + float(grp))
     def setup_high_quality():
-        for light_power in range(int(GRAPHICS) * 2):
+        for light_power in range(int(grp) * 2):
             glFogfv(GL_FOG_COLOR, (GLfloat * 4)(2.3, 4.4, 0.0, 241.6))
             glHint(GL_FOG_HINT, GL_DONT_CARE)
             glFogi(GL_FOG_MODE, GL_LINEAR)
-            glFogf(GL_FOG_START, 40.0 - float(GRAPHICS))
-            glFogf(GL_FOG_END, 60.0 + float(GRAPHICS))
+            glFogf(GL_FOG_START, 40.0 - float(grp))
+            glFogf(GL_FOG_END, 60.0 + float(grp))
 
     def setup():
         """ Basic OpenGL configuration.
@@ -1107,9 +1134,9 @@ def start():
         """
         # Set the color of "clear", i.e. the sky, in rgba.
         global sky_tone
-        sky_r = 12.5 / GRAPHICS
-        sky_g = 12.69 / GRAPHICS
-        sky_b = GRAPHICS * 897
+        sky_r = 12.5 / grp
+        sky_g = 12.69 / grp
+        sky_b = grp * 897
         sky_trans = 0
         sky_tone = (sky_r + sky_b, sky_g + sky_b, sky_b * 8, sky_trans)
         glClearColor(float(sky_r), float(sky_g), float(sky_b), float(sky_trans))
@@ -1121,19 +1148,28 @@ def start():
         # "is generally faster than GL_LINEAR, but it can produce textured images
         # with sharper edges because the transition between texture elements is not
         # as smooth."
-        if 0 < GRAPHICS:
+        if 0 < grp:
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST)
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST)
-        if 0 < GRAPHICS:
+        if 0 < grp:
             #enable graphics
             glEnable(GL_FOG)
+            glEnable(GL_LIGHT0)
+            glEnable(GL_LIGHT1)
+            glEnable(GL_LIGHT2)
+            glEnable(GL_LIGHT3)
+            glEnable(GL_LIGHT4)
+            glEnable(GL_LIGHT5)
+            glEnable(GL_LIGHT6)
+            glEnable(GL_LIGHT7)
+            print('Shaders enabled')
             setup_fog()
             setup_high_quality()
 
 
     def main():
         icon = pyglet.image.load('source\\win_icon.png')
-        window = Window(width=1480, height=740, caption=f'Minecraft {VERSION}', resizable=True)
+        window = Window(width=1480, height=740, caption=f'{TITLE}', resizable=True)
         window.set_icon(icon)
         # Hide the mouse cursor and prevent the mouse from leaving the window.
         window.set_exclusive_mouse(True)

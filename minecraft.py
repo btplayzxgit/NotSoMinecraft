@@ -1,3 +1,3 @@
 import NotSoMinecraft
 
-NotSoMinecraft.start() 
+NotSoMinecraft.start()
