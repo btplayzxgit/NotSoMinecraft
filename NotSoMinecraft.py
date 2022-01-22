@@ -16,10 +16,14 @@ try:
     from pyglet.window import key, mouse
     from pyglet.gl import *
     from numpy import mean as average
+    from platform import system as operating_sys
 except ImportError as e:
     import os
     print(f'Realized Error: {e}\nInstalling...')
-    os.system('source\\kick_load.bat')
+    
+
+    if operating_sys() == 'Windows': os.system('source\\kick_load.bat')
+    else: os.system('pip3 install numpy'); os.system('pip3 install pyglet'); os.system('pip3 install pyautogui')
 else:
     print('Installed NotSoMinecraft Requirements')
 
@@ -46,6 +50,7 @@ TIME_ZONE = 0
 BL_SKY = False
 
 print(f'NotSoMinecraft Engine')
+print(f'Using NotSoMinecraft for {operating_sys()}')
 
 
 class NotSoMinecraftTerrian:
@@ -64,7 +69,8 @@ def start():
         turtle.title(f'{TITLE}')
     turtle.bgpic('source\\load.gif')
     turtle.setup(1429, 645)
-    os.system('source\\kick_load.bat')
+    if operating_sys() == 'Windows': os.system('source\\kick_load.bat')
+    else: os.system('pip3 install numpy'); os.system('pip3 install pyglet'); os.system('pip3 install pyautogui')
     
     time.sleep(2)
     turtle.bye()
