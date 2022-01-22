@@ -51,7 +51,7 @@ print(f'NotSoMinecraft Engine')
 class NotSoMinecraftTerrian:
     seed = 452692 - random.randint(0, 6000)
     map_size = 500
-    def complexify_seed(): seed = NotSoMinecraftTerrian.seed; seed = seed - seed * seed + seed / 8
+    def complexify_seed(): seed = NotSoMinecraftTerrian.seed; seed = seed - seed * seed + seed / 8 + 785 + seed - 1000
 
 
 
@@ -72,8 +72,10 @@ def start():
         turtle.title(f'{TITLE}')
     except:
         turtle.title(f'{TITLE}')
-    startup_screen_choice = random.randint(1, 6)
+    startup_screen_choice = random.randint(1, 7)
     turtle.bgpic(f'source\\startup_screens\\startup_{startup_screen_choice}.gif')
+    if startup_screen_choice == 7: turtle.setup(1097, 630)
+    if startup_screen_choice == 6: turtle.setup(1019, 664)
     if startup_screen_choice == 5: turtle.setup(985, 690)
     if startup_screen_choice == 4: turtle.setup(890, 532)
     if startup_screen_choice == 3: turtle.setup(703, 523)
@@ -921,6 +923,13 @@ def start():
                     pass
                 else:
                     WORDS_IN_CHAT = WORDS_IN_CHAT + f'\n{username}: {keyword}'
+                if keyword == '/time set day':
+                    global TIME_ZONE
+                    WORDS_IN_CHAT = WORDS_IN_CHAT + f'\nTime set to day'
+                    TIME_ZONE = 0
+                if keyword == '/time set night':
+                    WORDS_IN_CHAT = WORDS_IN_CHAT + f'\nTime set to night'
+                    TIME_ZONE = 20000
                 self.set_exclusive_mouse(True)
                 
                 
@@ -1249,6 +1258,8 @@ def start():
         main()
     except Exception as e:
         print(f'NotSoMinecraft failed to start:\n\n{e}')
+    else:
+        print('Game ran without any issue')
 
         
 
