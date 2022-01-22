@@ -63,7 +63,7 @@ def start():
     except:
         turtle.title(f'{TITLE}')
     turtle.bgpic('source\\load.gif')
-    turtle.setup(1135, 653)
+    turtle.setup(1429, 645)
     os.system('source\\kick_load.bat')
     
     time.sleep(2)
@@ -72,8 +72,9 @@ def start():
         turtle.title(f'{TITLE}')
     except:
         turtle.title(f'{TITLE}')
-    startup_screen_choice = random.randint(1, 5)
+    startup_screen_choice = random.randint(1, 6)
     turtle.bgpic(f'source\\startup_screens\\startup_{startup_screen_choice}.gif')
+    if startup_screen_choice == 5: turtle.setup(985, 690)
     if startup_screen_choice == 4: turtle.setup(890, 532)
     if startup_screen_choice == 3: turtle.setup(703, 523)
     if startup_screen_choice == 2: turtle.setup(943, 655)
@@ -162,7 +163,7 @@ def start():
     DIAMOND = tex_coords((0, 3), (0, 3), (0, 3))
     BEDROCK = tex_coords((1, 3), (1, 3), (1, 3))
     GOLD = tex_coords((2, 3), (2, 3), (2, 3))
-    GLOWSTONE = tex_coords((3, 3), (3, 3), (3, 3))
+    WOOD_PLANK = tex_coords((3, 3), (3, 3), (3, 3))
     COBBLESTONE = tex_coords((3, 2), (3, 2), (3, 2))
     GLASS = None
 
@@ -942,7 +943,7 @@ def start():
                     self.flying = not self.flying
             if creative:
                 if symbol == key.I:
-                    item = pyautogui.confirm(title=f'{TITLE}', text='Inventory\n\nSelect item', buttons=['Grass', 'Dirt', 'Stone', 'Bedrock', 'Diamond', 'Gold', 'Wood', 'Birch Wood', 'Leaf', 'Sand', 'Brick', 'Glowstone', 'Cobblestone', 'Glass', 'Cactus'])
+                    item = pyautogui.confirm(title=f'{TITLE}', text='Inventory\n\nSelect item', buttons=['Grass', 'Dirt', 'Stone', 'Bedrock', 'Diamond', 'Gold', 'Wood', 'Birch Wood', 'Leaf', 'Sand', 'Brick', 'Wooden Plank', 'Cobblestone', 'Glass', 'Cactus'])
                     if item == 'Grass': self.block = GRASS
                     if item == 'Dirt': self.block = DIRT
                     if item == 'Stone': self.block = STONE
@@ -954,7 +955,7 @@ def start():
                     if item == 'Leaf': self.block = LEAF
                     if item == 'Sand': self.block = SAND
                     if item == 'Brick': self.block = BRICK
-                    if item == 'Glowstone': self.block = GLOWSTONE
+                    if item == 'Wooden Plank': self.block = WOOD_PLANK
                     if item == 'Cobblestone': self.block = COBBLESTONE
                     if item == 'Glass': self.block = GLASS
                     if item == 'Cactus': self.block = CACTUS
