@@ -15,6 +15,7 @@ try:
     from pyglet.graphics import TextureGroup
     from pyglet.window import key, mouse
     from pyglet.gl import *
+    from numpy import mean as average
 except ImportError as e:
     import os
     print(f'Realized Error: {e}\nInstalling...')
@@ -49,6 +50,7 @@ print(f'NotSoMinecraft Engine')
 
 class NotSoMinecraftTerrian:
     seed = 452692 - random.randint(0, 6000)
+    map_size = 500
     def complexify_seed(): seed = NotSoMinecraftTerrian.seed; seed = seed - seed * seed + seed / 8
 
 
@@ -70,8 +72,12 @@ def start():
         turtle.title(f'{TITLE}')
     except:
         turtle.title(f'{TITLE}')
-    turtle.bgpic('source\\startup.gif')
-    turtle.setup(1202, 568)
+    startup_screen_choice = random.randint(1, 5)
+    turtle.bgpic(f'source\\startup_screens\\startup_{startup_screen_choice}.gif')
+    if startup_screen_choice == 4: turtle.setup(890, 532)
+    if startup_screen_choice == 3: turtle.setup(703, 523)
+    if startup_screen_choice == 2: turtle.setup(943, 655)
+    if startup_screen_choice == 1: turtle.setup(854, 646)
     turtle.exitonclick()
     pyautogui.alert(title=f'{TITLE}', text='CONTROLS\n\nW - FORWARD\nS - BACKWARDS\nA - LEFT\nD - RIGHT\nC - CROUCH\nSPACE - JUMP\nESC - PAUSE THE GAME\nTAB - FLY\n/ - CHAT\nR - SPRINT\nI - INVENTORY', button='PLAY')
      # About the height of a block.
@@ -166,7 +172,7 @@ def start():
         (-1, 0, 0),
         ( 1, 0, 0),
         ( 0, 0, 1),
-        ( 0, 0,-1),
+        ( 0, 0, -1),
     ]
 
 
@@ -242,7 +248,7 @@ def start():
             global gen
             gen = NoiseGen(NotSoMinecraftTerrian.seed)
 
-            n = 500 #size of the world
+            n = NotSoMinecraftTerrian.map_size #size of the world
             s = 1  # step size
             y = 0  # initial y height
             j = 0 # terrian generation time
@@ -1064,12 +1070,12 @@ def start():
                 sky_trans = 0
                 glClearColor(sky_r, sky_g, sky_b, sky_trans)
                 glEnable(GL_LIGHTING)
-                glDisable(GL_LIGHT0)
+                glEnable(GL_LIGHT0)
                 glDisable(GL_LIGHT1)
                 glDisable(GL_LIGHT2)
                 glDisable(GL_LIGHT3)
                 glDisable(GL_LIGHT4)
-                glDisable(GL_LIGHT5)
+                glEnable(GL_LIGHT5)
                 glDisable(GL_LIGHT6)
                 glDisable(GL_LIGHT7)
                 TIME_ZONE = TIME_ZONE + 1
@@ -1148,7 +1154,7 @@ def start():
             if not BL_SKY: sky_tone = (sky_r + sky_b, sky_g + sky_b, sky_b * 8, sky_trans)
             else: sky_tone = (0, 0, 0, 0)
             global gen
-            self.label.text = f'FPS: {int(pyglet.clock.get_fps())} Position: x={int(x)} y={int(y)} z={int(z)} Sky RGBA: {sky_tone} Terrian Seed: {gen.seed} Time: {TIME_ZONE}'
+            self.label.text = f'FPS: {int(pyglet.clock.get_fps())} Average FPS: {int(average(int(pyglet.clock.get_fps())))} Position: x={int(x)} y={int(y)} z={int(z)} Sky RGBA: {sky_tone} Terrian Seed: {gen.seed} Time: {TIME_ZONE}'
             self.label.draw()
 
         def draw_reticle(self):
@@ -1232,7 +1238,7 @@ def start():
 
     def main():
         icon = pyglet.image.load('source\\win_icon.png')
-        window = Window(width=1480, height=740, caption=f'{TITLE}', resizable=True)
+        window = Window(width=1680, height=740, caption=f'{TITLE}', resizable=True)
         window.set_icon(icon)
         # Hide the mouse cursor and prevent the mouse from leaving the window.
         window.set_exclusive_mouse(True)
