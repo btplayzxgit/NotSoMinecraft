@@ -32,8 +32,8 @@ global WORDS_IN_CHAT
 WORDS_IN_CHAT = ''
 username = 'Player'
 keyword = None
-UPDATE_TIME = 120
-SECTOR_SIZE = 18
+UPDATE_TIME = 400
+RENDER_DISTANCE = 14
 WALKING_SPEED = 3
 FLYING_SPEED = 15
 CROUCH_SPEED = 2
@@ -54,8 +54,8 @@ print(f'Using NotSoMinecraft for {operating_sys()}')
 
 
 class NotSoMinecraftTerrian:
-    seed = 452692 - random.randint(0, 6000)
-    map_size = 500
+    seed = 452692 - random.randint(0, 8000)
+    map_size = 600
     def complexify_seed(): seed = NotSoMinecraftTerrian.seed; seed = seed - seed * seed + seed / 8 + 785 + seed - 1000
 
 
@@ -217,7 +217,7 @@ def start():
 
         """
         x, y, z = normalize(position)
-        x, y, z = x // SECTOR_SIZE, y // SECTOR_SIZE, z // SECTOR_SIZE
+        x, y, z = x // RENDER_DISTANCE, y // RENDER_DISTANCE, z // RENDER_DISTANCE
         return (x, 0, z)
 
 
@@ -254,6 +254,7 @@ def start():
             """ Initialize the world by placing all the blocks.
 
             """
+
             global gen
             gen = NoiseGen(NotSoMinecraftTerrian.seed)
 
@@ -272,7 +273,6 @@ def start():
             for x in xrange(0, n, s):
                 for z in xrange(0, n, s):
                     heightMap[z + x * n] = int(gen.getHeight(x, z))
-
             #Generate the world
             for x in xrange(0, n, s):
                 j = j + 1
@@ -322,7 +322,6 @@ def start():
                                 for y in xrange(h + 1, h + cactusHeight):
                                     self.add_block((x, y, z), CACTUS, immediate=False)
                 print(f'Generating terrian... {j}/{n}%')
-
         def hit_test(self, position, vector, max_distance=8):
             """ Line of sight search from current position. If a block is
             intersected it is returned, along with the block previously in the line
@@ -1185,14 +1184,9 @@ def start():
         """ Configure the OpenGL fog properties.
 
         """
-        # Set the fog color.
         glFogfv(GL_FOG_COLOR, (GLfloat * 4)(0.5, 0.69, 1.0, 1))
-        # Say we have no preference between rendering speed and quality.
         glHint(GL_FOG_HINT, GL_DONT_CARE)
-        # Specify the equation used to compute the blending factor.
         glFogi(GL_FOG_MODE, GL_LINEAR)
-        # How close and far away fog starts and ends. The closer the start and end,
-        # the denser the fog in the fog range.
         glFogf(GL_FOG_START, 40.0 - float(grp))
         glFogf(GL_FOG_END, 60.0 + float(grp))
     def setup_high_quality():
@@ -1202,7 +1196,13 @@ def start():
             glFogi(GL_FOG_MODE, GL_LINEAR)
             glFogf(GL_FOG_START, 40.0 - float(grp))
             glFogf(GL_FOG_END, 60.0 + float(grp))
-
+    def setup_double_high_quality():
+        for light_power in range(int(grp) * 42):
+            glFogfv(GL_FOG_COLOR, (GLfloat * 4)(2.3, 4.4, 0.0, 241.6))
+            glHint(GL_FOG_HINT, GL_DONT_CARE)
+            glFogi(GL_FOG_MODE, GL_LINEAR)
+            glFogf(GL_FOG_START, 40.0 - float(grp))
+            glFogf(GL_FOG_END, 60.0 + float(grp))
     def setup():
         """ Basic OpenGL configuration.
 
@@ -1229,27 +1229,39 @@ def start():
         # "is generally faster than GL_LINEAR, but it can produce textured images
         # with sharper edges because the transition between texture elements is not
         # as smooth."
-        if 0 < grp:
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST)
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST)
-        if 0 < grp:
-            #enable graphics
-            print('Enabling shaders...')
-            glEnable(GL_FOG)
-            glDisable(GL_LIGHTING)
-            glEnable(GL_LIGHT0)
-            glEnable(GL_LIGHT1)
-            glEnable(GL_LIGHT2)
-            glEnable(GL_LIGHT3)
-            glEnable(GL_LIGHT4)
-            glEnable(GL_LIGHT5)
-            glEnable(GL_LIGHT6)
-            glEnable(GL_LIGHT7)
-            glEnable(GL_BLEND)
-            glBlendFunc(GL_ONE, GL_ONE)
-            print('Shaders enabled')
-            setup_fog()
-            setup_high_quality()
+        def enable_graphics():
+            if 0 < grp:
+                glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST)
+                glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST)
+            if 0 < grp:
+                #enable graphics
+                print('Enabling shaders...')
+                glEnable(GL_FOG)
+                glDisable(GL_LIGHTING)
+                glEnable(GL_LIGHT0)
+                glEnable(GL_LIGHT1)
+                glEnable(GL_LIGHT2)
+                glEnable(GL_LIGHT3)
+                glEnable(GL_LIGHT4)
+                glEnable(GL_LIGHT5)
+                glEnable(GL_LIGHT6)
+                glEnable(GL_LIGHT7)
+                glEnable(GL_BLEND)
+                glBlendFunc(GL_ONE, GL_ONE)
+                glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
+                glEnable(GL_ALPHA_TEST)
+                glShadeModel(GL_SMOOTH)
+                glEnable(GL_LINE_SMOOTH)
+                glEnable(GL_POLYGON_SMOOTH)
+                glHint(GL_LINE_SMOOTH_HINT, GL_NICEST)
+                glClear(GL_COLOR_BUFFER_BIT)
+                setup_fog()
+                setup_high_quality()
+                setup_double_high_quality()
+                print('Shaders enabled')
+        enable_graphics()
+            
+
 
 
     def main():
