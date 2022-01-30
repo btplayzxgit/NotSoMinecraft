@@ -1,4 +1,5 @@
 from __future__ import division
+from turtle import rt
 try:
     import sys
     import math
@@ -78,8 +79,9 @@ def start():
         turtle.title(f'{TITLE}')
     except:
         turtle.title(f'{TITLE}')
-    startup_screen_choice = random.randint(1, 7)
+    startup_screen_choice = random.randint(1, 8)
     turtle.bgpic(f'source\\startup_screens\\startup_{startup_screen_choice}.gif')
+    if startup_screen_choice == 8: turtle.setup(1459, 587)
     if startup_screen_choice == 7: turtle.setup(1097, 630)
     if startup_screen_choice == 6: turtle.setup(1019, 664)
     if startup_screen_choice == 5: turtle.setup(985, 690)
@@ -100,6 +102,7 @@ def start():
     if gamemode == None: quit()
     if gamemode == 'Creative': creative, survival = True, False
     if gamemode == 'Survival': creative, survival = False, True
+    del gamemode
 
 
     if sys.version_info[0] >= 3:
@@ -139,8 +142,11 @@ def start():
         result.extend(side * 4)
         return result
 
-
-    TEXTURE_PATH = 'source\\normal_texture_pack.png'
+    rtx_mode = pyautogui.confirm(title=TITLE, text='Do you want to go on RTX Mode?\nRTX mode allows better textures in your game experience.', buttons=['RTX ON', 'RTX OFF'])
+    if rtx_mode == None: quit()
+    elif rtx_mode == 'RTX OFF': TEXTURE_PATH = 'source\\normal_texture_pack.png'
+    else: TEXTURE_PATH = 'source\\rtx_texture_pack.png'
+    del rtx_mode
 
     GRASS = tex_coords((1, 0), (0, 1), (0, 0))
     SAND = tex_coords((1, 1), (1, 1), (1, 1))
@@ -223,6 +229,8 @@ def start():
                     jh = jh + 1
                     print(f'Generating Height Map Stage 2/2... Parts of stage developed: {jh}')
                     heightMap[z + x * n] = int(gen.getHeight(x, z))
+            
+            jh = 0
             del jh
             for x in xrange(0, n, s):
                 j = j + 1
@@ -268,11 +276,17 @@ def start():
                                 for y in xrange(h + 1, h + cactusHeight):
                                     self.add_block((x, y, z), CACTUS, immediate=False)
                 print(f'Generating terrian... {j}/{n}%')
+            
+
+            j, n, s, y, h, z, x = 0, 0, 0, 0, 0, 0, 0
 
             del j
             del n
             del s
             del y
+            del h
+            del z
+            del x
         def hit_test(self, position, vector, max_distance=8):
             m = 8
             x, y, z = position
@@ -557,9 +571,7 @@ def start():
                             self.model.add_block(previous, self.block)
                         except:
                             if survival:
-                                self.set_exclusive_mouse(False)
-                                pyautogui.alert(title=f'{TITLE}', text='There is no block to place..\nStart mining to get blocks!', button='Alright')
-                                self.set_exclusive_mouse(True)
+                                print()
                 elif button == pyglet.window.mouse.RIGHT and block:
                     texture = self.model.world[block]
                     if creative:
@@ -567,7 +579,7 @@ def start():
                             self.model.remove_block(block)
                             if survival:
                                 self.block = texture
-                                previous = texture     
+                                previous = texture  
                     if survival:
                         if texture != WATER:
                             if texture != BEDROCK:
@@ -635,7 +647,7 @@ def start():
                     self.flying = not self.flying
             if creative:
                 if symbol == key.I:
-                    item = pyautogui.confirm(title=f'{TITLE}', text='Inventory\n\nSelect item', buttons=['Grass', 'Dirt', 'Stone', 'Bedrock', 'Diamond', 'Gold', 'Wood', 'Birch Wood', 'Leaf', 'Sand', 'Brick', 'Wooden Plank', 'Cobblestone', 'Glass', 'Cactus'])
+                    item = pyautogui.confirm(title=f'{TITLE}', text='Inventory\n\nSelect item', buttons=['Grass', 'Dirt', 'Stone', 'Bedrock', 'Diamond', 'Gold', 'Wood', 'Birch Wood', 'Leaf', 'Sand', 'Brick', 'Wooden Plank', 'Cobblestone', 'Glass', 'Cactus', 'Water'])
                     if item == 'Grass': self.block = GRASS
                     if item == 'Dirt': self.block = DIRT
                     if item == 'Stone': self.block = STONE
@@ -651,6 +663,8 @@ def start():
                     if item == 'Cobblestone': self.block = COBBLESTONE
                     if item == 'Glass': self.block = GLASS
                     if item == 'Cactus': self.block = CACTUS
+                    if item == 'Water': self.block = WATER
+                    del item
 
         def on_key_release(self, symbol, modifiers):
             if symbol == key.W:
