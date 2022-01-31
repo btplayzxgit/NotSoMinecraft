@@ -90,7 +90,7 @@ def start():
     if startup_screen_choice == 2: turtle.setup(943, 655)
     if startup_screen_choice == 1: turtle.setup(854, 646)
     turtle.exitonclick()
-    pyautogui.alert(title=f'{TITLE}', text='CONTROLS\n\nW - FORWARD\nS - BACKWARDS\nA - LEFT\nD - RIGHT\nC - CROUCH\nSPACE - JUMP\nESC - PAUSE THE GAME\nTAB - FLY\n/ - CHAT\nR - SPRINT\nI - INVENTORY', button='PLAY')
+    pyautogui.alert(title=f'{TITLE}', text='CONTROLS\n\nW - FORWARD\nS - BACKWARDS\nA - LEFT\nD - RIGHT\nC - CROUCH\nSPACE - JUMP\nESC - PAUSE THE GAME\nTAB - FLY\n/ - CHAT\nR - SPRINT\nI - INVENTORY\nSHIFT - CROUCH WITHOUT ZOOM', button='PLAY')
 
     global creative
     global survival
@@ -146,7 +146,6 @@ def start():
     if rtx_mode == None: quit()
     elif rtx_mode == 'RTX OFF': TEXTURE_PATH = 'source\\normal_texture_pack.png'
     else: TEXTURE_PATH = 'source\\rtx_texture_pack.png'
-    del rtx_mode
 
     GRASS = tex_coords((1, 0), (0, 1), (0, 0))
     SAND = tex_coords((1, 1), (1, 1), (1, 1))
@@ -439,7 +438,7 @@ def start():
                 x=10, y=self.height - 10, anchor_x='left', anchor_y='top',
                 color=(0, 0, 0, 255))
 
-            pyglet.clock.schedule_interval(self.update, 1.0 / UPDATE_TIME)
+            pyglet.clock.schedule_interval(self.update, 0.5 / UPDATE_TIME)
 
         def set_exclusive_mouse(self, exclusive):
             super(Window, self).set_exclusive_mouse(exclusive)
@@ -579,7 +578,7 @@ def start():
                             self.model.remove_block(block)
                             if survival:
                                 self.block = texture
-                                previous = texture  
+                                previous = texture
                     if survival:
                         if texture != WATER:
                             if texture != BEDROCK:
@@ -871,6 +870,7 @@ def start():
             sky_trans = 0
             glClearColor(sky_r, sky_g, sky_b, sky_trans)
         glEnable(GL_CULL_FACE)
+        global enable_graphics
         def enable_graphics():
             if 0 < grp:
                 glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST)
@@ -915,12 +915,7 @@ def start():
         window.set_exclusive_mouse(True)
         setup()
         pyglet.app.run()
-    try:
-        main()
-    except Exception as e:
-        print(f'NotSoMinecraft failed to start:\n\n{e}')
-    else:
-        print('Game ran without any issue')
+    main()
 
         
 
