@@ -1,5 +1,4 @@
 from __future__ import division
-from turtle import rt
 try:
     import sys
     import math
@@ -58,6 +57,7 @@ class NotSoMinecraftTerrian:
     seed = 452692 - random.randint(0, 8000)
     map_size = 600
     def complexify_seed(): seed = NotSoMinecraftTerrian.seed; seed = seed - seed * seed + seed / 8 + 785 + seed - 1000
+class NotSoMinecraftError(Exception): pass
 
 
 
@@ -145,7 +145,7 @@ def start():
     rtx_mode = pyautogui.confirm(title=TITLE, text='Do you want to go on RTX Mode?\nRTX mode allows better textures in your game experience.', buttons=['RTX ON', 'RTX OFF'])
     if rtx_mode == None: quit()
     elif rtx_mode == 'RTX OFF': TEXTURE_PATH = 'source\\normal_texture_pack.png'
-    else: TEXTURE_PATH = 'source\\rtx_texture_pack.png'
+    else: TEXTURE_PATH = 'source\\rtx_texture_pack.png'; global PLAYER_FOV; PLAYER_FOV = PLAYER_FOV + 32.4
 
     GRASS = tex_coords((1, 0), (0, 1), (0, 0))
     SAND = tex_coords((1, 1), (1, 1), (1, 1))
@@ -627,6 +627,9 @@ def start():
                 self.set_exclusive_mouse(True)
                 
                 
+
+                
+                
             elif symbol == key.SPACE:
                 self.jumping = True
             elif symbol == key.ESCAPE:
@@ -646,7 +649,7 @@ def start():
                     self.flying = not self.flying
             if creative:
                 if symbol == key.I:
-                    item = pyautogui.confirm(title=f'{TITLE}', text='Inventory\n\nSelect item', buttons=['Grass', 'Dirt', 'Stone', 'Bedrock', 'Diamond', 'Gold', 'Wood', 'Birch Wood', 'Leaf', 'Sand', 'Brick', 'Wooden Plank', 'Cobblestone', 'Glass', 'Cactus', 'Water'])
+                    item = pyautogui.confirm(title=f'{TITLE}', text='Inventory\n\nSelect item', buttons=['Grass', 'Dirt', 'Stone', 'Bedrock', 'Diamond', 'Gold', 'Wood', 'Birch Wood', 'Leaf', 'Sand', 'Brick', 'Wooden Plank', 'Cobblestone', 'Glass', 'Cactus'])
                     if item == 'Grass': self.block = GRASS
                     if item == 'Dirt': self.block = DIRT
                     if item == 'Stone': self.block = STONE
@@ -662,7 +665,6 @@ def start():
                     if item == 'Cobblestone': self.block = COBBLESTONE
                     if item == 'Glass': self.block = GLASS
                     if item == 'Cactus': self.block = CACTUS
-                    if item == 'Water': self.block = WATER
                     del item
 
         def on_key_release(self, symbol, modifiers):
@@ -915,7 +917,10 @@ def start():
         window.set_exclusive_mouse(True)
         setup()
         pyglet.app.run()
-    main()
+    try:
+        main()
+    except Exception as e:
+        raise NotSoMinecraftError(e)
 
         
 
