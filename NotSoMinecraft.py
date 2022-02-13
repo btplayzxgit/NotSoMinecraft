@@ -850,6 +850,7 @@ def start():
             glFogi(GL_FOG_MODE, GL_LINEAR)
             glFogf(GL_FOG_START, 40.0 - float(grp))
             glFogf(GL_FOG_END, 60.0 + float(grp))
+            glFogf(GL_FOG_DENSITY, 23.5)
     def setup_double_high_quality():
         for light_power in range(int(grp) * 42):
             glFogfv(GL_FOG_COLOR, (GLfloat * 4)(2.3, 4.4, 0.0, 241.6))
@@ -892,6 +893,7 @@ def start():
                 glEnable(GL_BLEND)
                 glBlendFunc(GL_ONE, GL_ONE)
                 glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
+                glBindTexture(GL_TEXTURE_2D, 0)
                 glEnable(GL_ALPHA_TEST)
                 glShadeModel(GL_SMOOTH)
                 glEnable(GL_LINE_SMOOTH)
