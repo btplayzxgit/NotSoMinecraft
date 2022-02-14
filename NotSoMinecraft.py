@@ -90,7 +90,7 @@ def start():
     if startup_screen_choice == 2: turtle.setup(943, 655)
     if startup_screen_choice == 1: turtle.setup(854, 646)
     turtle.exitonclick()
-    pyautogui.alert(title=f'{TITLE}', text='CONTROLS\n\nW - FORWARD\nS - BACKWARDS\nA - LEFT\nD - RIGHT\nC - CROUCH\nSPACE - JUMP\nESC - PAUSE THE GAME\nTAB - FLY\n/ - CHAT\nR - SPRINT\nI - INVENTORY\nSHIFT - CROUCH WITHOUT ZOOM', button='PLAY')
+    pyautogui.alert(title=f'{TITLE}', text='CONTROLS\n\nW - FORWARD\nS - BACKWARDS\nA - LEFT\nD - RIGHT\nC - CROUCH\nSPACE - JUMP\nESC - PAUSE THE GAME\nTAB - FLY\n/ - CHAT\nR - SPRINT\nI - INVENTORY\nSHIFT - CROUCH WITHOUT ZOOM\nE - CRAFT', button='PLAY')
 
     global creative
     global survival
@@ -627,7 +627,7 @@ def start():
                 self.set_exclusive_mouse(True)
                 
                 
-
+            
                 
                 
             elif symbol == key.SPACE:
@@ -666,6 +666,25 @@ def start():
                     if item == 'Glass': self.block = GLASS
                     if item == 'Cactus': self.block = CACTUS
                     del item
+            if survival:
+                if symbol == key.E:
+                    try:
+                        craft_item = pyautogui.confirm(title=TITLE, text=f'Do you want to craft this item?', buttons=['Craft', 'Cancel'])
+                        if craft_item == 'Cancel': pass
+                        elif craft_item == 'Craft':
+                            if self.block == WOOD: self.block = WOOD_PLANK
+                            elif self.block == WOOD2: self.block = WOOD_PLANK
+                            elif self.block == DIRT: self.block = GRASS
+                            elif self.block == WOOD_PLANK: self.block = WOOD
+                            elif self.block == GRASS: self.block = DIRT
+                            elif self.block == SAND: self.block = GLASS
+                            elif self.block == GLASS: self.block = DIAMOND
+                            elif self.block == STONE: self.block = COBBLESTONE
+                            elif self.block == COBBLESTONE: self.block = STONE
+                            else: pyautogui.alert(title=TITLE, text='Failed to craft item', button='Alright')
+                        del craft_item
+                    except:
+                        pyautogui.alert(title=TITLE, text='No item in hand to craft', button='Alright')
 
         def on_key_release(self, symbol, modifiers):
             if symbol == key.W:
