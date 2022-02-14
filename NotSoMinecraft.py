@@ -680,7 +680,9 @@ def start():
                             elif self.block == SAND: self.block = GLASS
                             elif self.block == GLASS: self.block = DIAMOND
                             elif self.block == STONE: self.block = COBBLESTONE
-                            elif self.block == COBBLESTONE: self.block = STONE
+                            elif self.block == COBBLESTONE: self.block = SAND
+                            elif self.block == CACTUS: self.block = WOOD
+                            elif self.block == GOLD: self.block = BRICK
                             else: pyautogui.alert(title=TITLE, text='Failed to craft item', button='Alright')
                         del craft_item
                     except:
