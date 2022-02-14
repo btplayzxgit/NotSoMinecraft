@@ -17,6 +17,7 @@ try:
     from pyglet.gl import *
     from numpy import mean as average
     from platform import system as operating_sys
+    import ctypes
 except ImportError as e:
     import os
     print(f'Realized Error: {e}\nInstalling...')
@@ -71,7 +72,7 @@ def start():
     turtle.bgpic('source\\load.gif')
     turtle.setup(1429, 645)
     if operating_sys() == 'Windows': os.system('source\\kick_load.bat')
-    else: os.system('pip3 install numpy'); os.system('pip3 install pyglet'); os.system('pip3 install pyautogui')
+    else: os.system('pip install numpy'); os.system('pip install pyglet'); os.system('pip install pyautogui')
     
     time.sleep(2)
     turtle.bye()
@@ -684,6 +685,8 @@ def start():
                             elif self.block == CACTUS: self.block = WOOD
                             elif self.block == GOLD: self.block = BRICK
                             elif self.block == DIAMOND: self.block = COBBLESTONE
+                            elif self.block == BRICK: self.block = COBBLESTONE
+                            elif self.block == LEAF: self.block = GRASS
                             else: pyautogui.alert(title=TITLE, text='Failed to craft item', button='Alright')
                         del craft_item
                     except:
