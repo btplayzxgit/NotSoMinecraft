@@ -17,7 +17,6 @@ try:
     from pyglet.gl import *
     from numpy import mean as average
     from platform import system as operating_sys
-    import ctypes
 except ImportError as e:
     import os
     print(f'Realized Error: {e}\nInstalling...')
@@ -56,9 +55,12 @@ print(f'Using NotSoMinecraft for {operating_sys()}')
 
 class NotSoMinecraftTerrian:
     seed = 452692 - random.randint(0, 8000)
-    map_size = 600
+    map_size = 500
     def complexify_seed(): seed = NotSoMinecraftTerrian.seed; seed = seed - seed * seed + seed / 8 + 785 + seed - 1000
 class NotSoMinecraftError(Exception): pass
+
+
+def test_mode(): NotSoMinecraftTerrian.map_size = 100
 
 
 
@@ -92,6 +94,7 @@ def start():
     if startup_screen_choice == 1: turtle.setup(854, 646)
     turtle.exitonclick()
     pyautogui.alert(title=f'{TITLE}', text='CONTROLS\n\nW - FORWARD\nS - BACKWARDS\nA - LEFT\nD - RIGHT\nC - CROUCH\nSPACE - JUMP\nESC - PAUSE THE GAME\nTAB - FLY\n/ - CHAT\nR - SPRINT\nI - INVENTORY\nSHIFT - CROUCH WITHOUT ZOOM\nE - CRAFT', button='PLAY')
+
 
     global creative
     global survival
@@ -928,6 +931,7 @@ def start():
                 glHint(GL_POLYGON_SMOOTH_HINT, GL_NICEST)
                 glHint(GL_POINT_SMOOTH_HINT, GL_NICEST)
                 glClear(GL_COLOR_BUFFER_BIT)
+                glEnable(GL_NORMALIZE)
                 setup_fog()
                 setup_high_quality()
                 setup_double_high_quality()
